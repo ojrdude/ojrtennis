@@ -40,6 +40,7 @@ class Game:
         while True:
             self._check_for_quit()
             self._display_surf.fill(self._BG_COLOUR)
+            self._handle_bat_movement()
             self._draw_bat(self._bat_1)
             self._draw_bat(self._bat_2)
             pygame.display.update()
@@ -56,8 +57,6 @@ class Game:
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 pygame.quit()
                 sys.exit()
-            else:
-                pygame.event.post(event)
 
     def _draw_bat(self, bat):
         """
@@ -66,7 +65,24 @@ class Game:
         top_left_x, top_left_y = bat.top_left
         bat_rect = pygame.Rect(top_left_x, top_left_y, bat.WIDTH, bat.HEIGHT)
         pygame.draw.rect(self._display_surf, bat.COLOUR, bat_rect)
-        
+
+    def _handle_bat_movement(self):
+        """
+        Check if the players are pressing the buttons to move the bats and
+        move accordingly.
+        """
+        pressed_keys = pygame.key.get_pressed()
+        if pressed_keys[self._bat_1.up_key]:
+            self._bat_1.move_up()
+        if pressed_keys[self._bat_1.down_key]:
+            self._bat_1.move_down()
+        if pressed_keys[self._bat_2.up_key]:
+            self._bat_2.move_up()
+        if pressed_keys[self._bat_2.down_key]:
+            self._bat_2.move_down()
+            
+                           
+       
 if __name__ == '__main__':
     game = Game()
     game.main()

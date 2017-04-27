@@ -38,6 +38,7 @@ class Bat:
         Set the current Y Coordinate of the Centre of Bat
         """
         assert y <= self._maximum_y, "Setting y_coord outside maximum"
+        assert y >= 0, "Setting y_coord less than 0"
         self._y_coord = y
 
     @property
@@ -48,4 +49,23 @@ class Bat:
         x_coord = self.x_coord - self.WIDTH / 2
         y_coord = self.y_coord - self.HEIGHT / 2
         return x_coord, y_coord
+
+    def move_up(self):
+        """
+        Move the bat up. This should be called when the player has pressed the
+        button to move the bat upwards.
+        """
+        if self.y_coord - 5 >= 0:
+            self.y_coord -= 5
+        else: # Don't go off screen.
+            self.y_coord = 0
         
+    def move_down(self):
+        """
+        Move the bat down. This should be called when the player has pressed
+        the button to move the bat downwards.
+        """
+        if self.y_coord + 5 <= self._maximum_y:
+            self.y_coord += 5
+        else: # Don't go off screen
+            self.y_coord = self._maximum_y
