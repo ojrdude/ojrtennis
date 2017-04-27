@@ -28,15 +28,24 @@ class Bat:
     @property
     def y_coord(self):
         """
-        Get the current Y Coordinate of the Bat
+        Get the current Y Coordinate of the Centre of Bat
         """
         return self._y_coord
 
     @y_coord.setter
     def y_coord(self, y):
         """
-        Set the current Y Coordinate of the Bat
+        Set the current Y Coordinate of the Centre of Bat
         """
         assert y <= self._maximum_y, "Setting y_coord outside maximum"
         self._y_coord = y
+
+    @property
+    def top_left(self):
+        """
+        Get the current coordinates of the top left corner of the bat.
+        """
+        x_coord = self.x_coord - self.WIDTH / 2
+        y_coord = self.y_coord - self.HEIGHT / 2
+        return x_coord, y_coord
         

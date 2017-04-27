@@ -11,12 +11,6 @@ class Game:
     _WINDOW_WIDTH = 640
     _WINDOW_HEIGHT = 480
     _FPS = 25
-    _BOARD_WIDTH = 160 # Cells not pixels
-    _BOARD_HEIGHT = 160 # Cells not pixels
-    assert _WINDOW_WIDTH % _BOARD_WIDTH == 0, 'Board width not factor of '
-    'window width'
-    assert _WINDOW_HEIGHT % _BOARD_HEIGHT == 0, 'Board height not factor of '
-    'window height'
 
     _BG_COLOUR = (0, 0, 0)
 
@@ -24,12 +18,12 @@ class Game:
         self._display_surf = pygame.display.set_mode((self._WINDOW_WIDTH,
                                                       self._WINDOW_HEIGHT))
         self._fps_clock = pygame.time.Clock()
-        self._bat_1 = Bat(K_w, K_s, self._BOARD_HEIGHT)
-        self._bat_1.x_coord = 3
-        self._bat_1.y_coord = self._BOARD_HEIGHT / 2
-        self._bat_2 = Bat(K_UP, K_DOWN, self._BOARD_HEIGHT)
-        self._bat_2.x_coord = self._BOARD_WIDTH - 3
-        self._bat_2.y_coord = self._BOARD_HEIGHT / 2
+        self._bat_1 = Bat(K_w, K_s, self._WINDOW_HEIGHT)
+        self._bat_1.x_coord = 3 + self._bat_1.WIDTH / 2
+        self._bat_1.y_coord = self._WINDOW_HEIGHT / 2
+        self._bat_2 = Bat(K_UP, K_DOWN, self._WINDOW_HEIGHT)
+        self._bat_2.x_coord = self._WINDOW_WIDTH - 3 - self._bat_2.WIDTH / 2
+        self._bat_2.y_coord = self._WINDOW_HEIGHT / 2
         
 
     def main(self):
@@ -69,25 +63,10 @@ class Game:
         """
         Draw the bat in its current position on the display surface
         """
-        bat_x_pixel = self._get_pixel_for_x_coord(bat.x_coord)
-        bat_y_pixel = self._get_pixel_for_y_coord(bat.y_coord)
-        bat_rect = pygame.Rect(bat_x_pixel, bat_y_pixel, bat.WIDTH, bat.HEIGHT)
+        top_left_x, top_left_y = bat.top_left
+        bat_rect = pygame.Rect(top_left_x, top_left_y, bat.WIDTH, bat.HEIGHT)
         pygame.draw.rect(self._display_surf, bat.COLOUR, bat_rect)
         
-    def _get_pixel_for_x_coord(self, x_coord):
-        """
-        Return the pixel number for the given x coordinate.
-        """
-        pixels_per_coord = self._WINDOW_WIDTH / self._BOARD_WIDTH
-        return pixels_per_coord * x_coord
-
-    def _get_pixel_for_y_coord(self, y_coord):
-        """
-        Return the pixel number for the given y coordinate.
-        """
-        pixels_per_coord = self._WINDOW_HEIGHT / self._BOARD_HEIGHT
-        return pixels_per_coord * y_coord
-    
 if __name__ == '__main__':
     game = Game()
     game.main()
