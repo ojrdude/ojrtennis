@@ -5,6 +5,7 @@ import pygame
 import sys
 from pygame.locals import *
 from bat import Bat
+from ball import Ball
 
 class Game:
 
@@ -18,12 +19,18 @@ class Game:
         self._display_surf = pygame.display.set_mode((self._WINDOW_WIDTH,
                                                       self._WINDOW_HEIGHT))
         self._fps_clock = pygame.time.Clock()
+        
         self._bat_1 = Bat(K_w, K_s, self._WINDOW_HEIGHT)
         self._bat_1.x_coord = 3 + self._bat_1.WIDTH / 2
         self._bat_1.y_coord = self._WINDOW_HEIGHT / 2
+        
         self._bat_2 = Bat(K_UP, K_DOWN, self._WINDOW_HEIGHT)
         self._bat_2.x_coord = self._WINDOW_WIDTH - 3 - self._bat_2.WIDTH / 2
         self._bat_2.y_coord = self._WINDOW_HEIGHT / 2
+
+        ball_x = self._WINDOW_WIDTH / 2
+        ball_y = self._WINDOW_HEIGHT / 2
+        self._ball = Ball(ball_x, ball_y)
         
 
     def main(self):
@@ -41,8 +48,10 @@ class Game:
             self._check_for_quit()
             self._display_surf.fill(self._BG_COLOUR)
             self._handle_bat_movement()
+            self._ball.move()
             self._draw_bat(self._bat_1)
             self._draw_bat(self._bat_2)
+            self._draw_ball()
             pygame.display.update()
             self._fps_clock.tick(self._FPS)
 
@@ -60,7 +69,7 @@ class Game:
 
     def _draw_bat(self, bat):
         """
-        Draw the bat in its current position on the display surface
+        Draw the bat in its current position on the display surface.
         """
         top_left_x, top_left_y = bat.top_left
         bat_rect = pygame.Rect(top_left_x, top_left_y, bat.WIDTH, bat.HEIGHT)
@@ -80,8 +89,14 @@ class Game:
             self._bat_2.move_up()
         if pressed_keys[self._bat_2.down_key]:
             self._bat_2.move_down()
-            
-                           
+
+    def _draw_ball(self):
+        """
+        Draw the ball in its current position on the display surface.
+        """
+        ball_pos = (self._ball.x_coord, self._ball.y_coord)
+        pygame.draw.circle(self._display_surf, self._ball.COLOUR, ball_pos,
+                           self._ball.RADIUS)
        
 if __name__ == '__main__':
     game = Game()
