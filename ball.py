@@ -12,9 +12,10 @@ class Ball:
     Represents the ball in ojrtennis. The ball has x and y coordinates,
     speed and direction.
     """
-
+    
     RADIUS = 3
     COLOUR = (255, 255, 255)
+    _ACCEL_RATE = 1
     
     def __init__(self, start_x, start_y):
         self.x_coord = round(start_x)
@@ -70,6 +71,7 @@ class Ball:
                 self._direction = math.pi - self._direction
                 # 2 pi is a complete circle. Save memory thus:
                 self._direction = self._direction % (2 * math.pi)
+                self._speed += self._ACCEL_RATE
 
     def _x_direction(self):
         """
@@ -87,6 +89,6 @@ class Ball:
         TODO: If colliding with sides point for other player.
         """
         board_width, board_height = board_surf.get_size()
-        if self.y_coord == 0 or self.y_coord == board_height:
+        if self.y_coord <= 0 or self.y_coord >= board_height:
             self._direction *= -1
         
