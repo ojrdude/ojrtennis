@@ -101,6 +101,7 @@ class Game:
         """
         self._ball.test_collision_with_bat(self._bat_1)
         self._ball.test_collision_with_bat(self._bat_2)
+        self._ball.test_collision_with_game_edge(self._display_surf)
         
         
 if __name__ == '__main__':

@@ -79,3 +79,14 @@ class Ball:
         if cos(self._direction) > 0:
             return LeftOrRight.RIGHT
         return LeftOrRight.LEFT
+
+    def test_collision_with_game_edge(self, board_surf):
+        """
+        Test for collisions with the edge of the game board.
+        If colliding with the top or bottom bounce.
+        TODO: If colliding with sides point for other player.
+        """
+        board_width, board_height = board_surf.get_size()
+        if self.y_coord == 0 or self.y_coord == board_height:
+            self._direction *= -1
+        
