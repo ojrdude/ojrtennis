@@ -2,6 +2,9 @@
 Bat code for ojrtennis
 """
 
+import pygame
+from utilities import LeftOrRight
+
 class Bat:
     """
     A Bat in the ojrtennis game that can be controlled by the player
@@ -11,7 +14,7 @@ class Bat:
     HEIGHT = 70
     COLOUR = (255, 255, 255)
 
-    def __init__(self, up_key, down_key, board_height):
+    def __init__(self, up_key, down_key, board_height, is_right_hand_bat=False):
         """
         :param:up_key: the button that will cause the bat to move up
         :param:down_key: the button that will cause the bat to move down
@@ -24,6 +27,13 @@ class Bat:
 
         self.x_coord = 0
         self._y_coord = 0
+
+        if is_right_hand_bat:
+            self.side_of_board = LeftOrRight.RIGHT
+        else:
+            self.side_of_board = LeftOrRight.LEFT
+
+        self.surf = None # Set upon first draw
 
     @property
     def y_coord(self):
@@ -69,3 +79,11 @@ class Bat:
             self.y_coord += 5
         else: # Don't go off screen
             self.y_coord = self._maximum_y
+
+    def draw(self, surface):
+        """
+        Draw the bat on the surface.
+        """
+        top_left_x, top_left_y = self.top_left
+        bat_rect = pygame.Rect(top_left_x, top_left_y, self.WIDTH, self.HEIGHT)
+        self.surf = pygame.draw.rect(surface, self.COLOUR, bat_rect)

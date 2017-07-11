@@ -24,7 +24,7 @@ class Game:
         self._bat_1.x_coord = 3 + self._bat_1.WIDTH / 2
         self._bat_1.y_coord = self._WINDOW_HEIGHT / 2
         
-        self._bat_2 = Bat(K_UP, K_DOWN, self._WINDOW_HEIGHT)
+        self._bat_2 = Bat(K_UP, K_DOWN, self._WINDOW_HEIGHT, is_right_hand_bat=True)
         self._bat_2.x_coord = self._WINDOW_WIDTH - 3 - self._bat_2.WIDTH / 2
         self._bat_2.y_coord = self._WINDOW_HEIGHT / 2
 
@@ -32,7 +32,6 @@ class Game:
         ball_y = self._WINDOW_HEIGHT / 2
         self._ball = Ball(ball_x, ball_y)
         
-
     def main(self):
         """
         Main entry point for game
@@ -47,11 +46,9 @@ class Game:
         while True:
             self._check_for_quit()
             self._display_surf.fill(self._BG_COLOUR)
-            self._handle_bat_movement()
-            self._ball.move()
-            self._draw_bat(self._bat_1)
-            self._draw_bat(self._bat_2)
-            self._draw_ball()
+            self._do_all_movements()
+            self._draw()
+            self._test_collisions()            
             pygame.display.update()
             self._fps_clock.tick(self._FPS)
 
@@ -66,14 +63,6 @@ class Game:
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 pygame.quit()
                 sys.exit()
-
-    def _draw_bat(self, bat):
-        """
-        Draw the bat in its current position on the display surface.
-        """
-        top_left_x, top_left_y = bat.top_left
-        bat_rect = pygame.Rect(top_left_x, top_left_y, bat.WIDTH, bat.HEIGHT)
-        pygame.draw.rect(self._display_surf, bat.COLOUR, bat_rect)
 
     def _handle_bat_movement(self):
         """
@@ -90,14 +79,30 @@ class Game:
         if pressed_keys[self._bat_2.down_key]:
             self._bat_2.move_down()
 
-    def _draw_ball(self):
+    def _draw(self):
         """
-        Draw the ball in its current position on the display surface.
+        Draw the game in its current state.
+        """ 
+        self._bat_1.draw(self._display_surf)
+        self._bat_2.draw(self._display_surf)
+        self._ball.draw(self._display_surf)
+
+    def _do_all_movements(self):
         """
-        ball_pos = (self._ball.x_coord, self._ball.y_coord)
-        pygame.draw.circle(self._display_surf, self._ball.COLOUR, ball_pos,
-                           self._ball.RADIUS)
-       
+        Work out all the movements that have occurred this cycle.
+        """
+        self._handle_bat_movement()
+        self._ball.move()
+
+    def _test_collisions(self):
+        """
+        Test for the occurrence of any collisions in the game. E.g. bat and ball
+        or ball with edge of board.
+        """
+        self._ball.test_collision_with_bat(self._bat_1)
+        self._ball.test_collision_with_bat(self._bat_2)
+        
+        
 if __name__ == '__main__':
     game = Game()
     game.main()
