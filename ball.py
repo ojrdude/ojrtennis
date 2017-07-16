@@ -84,11 +84,23 @@ class Ball:
 
     def test_collision_with_game_edge(self, board_surf):
         """
-        Test for collisions with the edge of the game board.
+        Test for collisions with a vertical edge of the game board.
         If colliding with the top or bottom bounce.
-        TODO: If colliding with sides point for other player.
         """
-        board_width, board_height = board_surf.get_size()
+        board_height = board_surf.get_height()
         if self.y_coord <= 0 or self.y_coord >= board_height:
             self._direction *= -1
-        
+
+    def test_point_scored(self, board_surf):
+        """
+        Test for the ball colliding with either horizontal edge of the game
+        board. Return a tuple of (is_score, scorer) where is_score will be True if
+        a point is scored, False otherwise and scorer will be LeftOrRight.LEFT or
+        LeftOrRight.RIGHT depending on who scored, None if not a score.
+        """
+        board_width = board_surf.get_width()
+        if self.x_coord < 0:
+            return True, LeftOrRight.RIGHT
+        if self.x_coord > board_width:
+            return True, LeftOrRight.LEFT
+        return False, None

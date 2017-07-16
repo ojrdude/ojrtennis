@@ -1,11 +1,12 @@
 """
-Base game module of ojrtennis
+Base game module of ojrtennis.
 """
 import pygame
 import sys
 from pygame.locals import *
 from bat import Bat
 from ball import Ball
+from score import Score
 
 class Game:
 
@@ -31,6 +32,8 @@ class Game:
         ball_x = self._WINDOW_WIDTH / 2
         ball_y = self._WINDOW_HEIGHT / 2
         self._ball = Ball(ball_x, ball_y)
+
+        self._score = Score()
         
     def main(self):
         """
@@ -48,7 +51,8 @@ class Game:
             self._display_surf.fill(self._BG_COLOUR)
             self._do_all_movements()
             self._draw()
-            self._test_collisions()            
+            self._test_collisions()
+            self._test_point_scored()
             pygame.display.update()
             self._fps_clock.tick(self._FPS)
 
@@ -86,6 +90,7 @@ class Game:
         self._bat_1.draw(self._display_surf)
         self._bat_2.draw(self._display_surf)
         self._ball.draw(self._display_surf)
+        self._score.draw(self._display_surf)
 
     def _do_all_movements(self):
         """
@@ -102,8 +107,26 @@ class Game:
         self._ball.test_collision_with_bat(self._bat_1)
         self._ball.test_collision_with_bat(self._bat_2)
         self._ball.test_collision_with_game_edge(self._display_surf)
+
+    def _test_point_scored(self):
+        """
+        Test for the ball going off either horizontal edge of the screen.
+        If so, update score and reset the ball.
+        """
+        is_score, who_scored = self._ball.test_point_scored(self._display_surf)
+        if is_score:
+            self._score.point_scored(who_scored)
+            self._reset_ball()
+
+    def _reset_ball(self):
+        """
+        Get a new ball and put it in the middle of the board.
+        """
+        ball_x = self._WINDOW_WIDTH / 2
+        ball_y = self._WINDOW_HEIGHT / 2
+        self._ball = Ball(ball_x, ball_y)
         
-        
+
 if __name__ == '__main__':
     game = Game()
     game.main()
