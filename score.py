@@ -41,3 +41,11 @@ class Score:
             self._left_score += 1
         else:
             self._right_score += 1
+
+    @property
+    def score(self):
+        """
+        Return the score as a tuple of (left_score, right_score)
+        """
+        return (self._left_score, self._right_score)
+
