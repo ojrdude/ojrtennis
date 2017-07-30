@@ -24,7 +24,7 @@ class Ball:
         self._direction = self._get_random_start_direction()
         # Radians anticlockwise from x axis
 
-        self._speed = 5
+        self._speed = 3
 
         self._surf = None # Set upon first draw
 
@@ -65,6 +65,9 @@ class Ball:
         """
         Test for a collision with the bat. Handle the change
         to the ball's direction accordingly.
+
+        In order to prevent the ball going through the bat, the maximum speed
+        is the same number of pixels as the bat width.
         """
         if self._surf.colliderect(bat.surf):
             if self._x_direction() == bat.side_of_board:
@@ -72,6 +75,8 @@ class Ball:
                 # 2 pi is a complete circle. Save memory thus:
                 self._direction = self._direction % (2 * math.pi)
                 self._speed += self._ACCEL_RATE
+                if self._speed > bat.WIDTH:
+                    self._speed = bat.WIDTH
 
     def _x_direction(self):
         """

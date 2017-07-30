@@ -28,6 +28,8 @@ class Bat:
         self.x_coord = 0
         self._y_coord = 0
 
+        self._speed = 3
+
         if is_right_hand_bat:
             self.side_of_board = LeftOrRight.RIGHT
         else:
@@ -65,8 +67,8 @@ class Bat:
         Move the bat up. This should be called when the player has pressed the
         button to move the bat upwards.
         """
-        if self.y_coord - 5 >= 0:
-            self.y_coord -= 5
+        if self.y_coord - self._speed >= 0:
+            self.y_coord -= self._speed
         else: # Don't go off screen.
             self.y_coord = 0
         
@@ -75,8 +77,8 @@ class Bat:
         Move the bat down. This should be called when the player has pressed
         the button to move the bat downwards.
         """
-        if self.y_coord + 5 <= self._maximum_y:
-            self.y_coord += 5
+        if self.y_coord + self._speed <= self._maximum_y:
+            self.y_coord += self._speed
         else: # Don't go off screen
             self.y_coord = self._maximum_y
 

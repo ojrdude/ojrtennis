@@ -12,7 +12,7 @@ class Game:
 
     _WINDOW_WIDTH = 640
     _WINDOW_HEIGHT = 480
-    _FPS = 25
+    _FPS = 50
 
     _BG_COLOUR = (0, 0, 0)
 
