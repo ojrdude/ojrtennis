@@ -4,6 +4,7 @@ Bat code for ojrtennis
 
 import pygame
 from utilities import LeftOrRight
+from math import radians
 
 class Bat:
     """
@@ -13,6 +14,7 @@ class Bat:
     WIDTH = 20
     HEIGHT = 70
     COLOUR = (255, 255, 255)
+    _ANGLE_MODIFIER = 20
 
     def __init__(self, up_key, down_key, board_height, is_right_hand_bat=False):
         """
@@ -89,3 +91,35 @@ class Bat:
         top_left_x, top_left_y = self.top_left
         bat_rect = pygame.Rect(top_left_x, top_left_y, self.WIDTH, self.HEIGHT)
         self.surf = pygame.draw.rect(surface, self.COLOUR, bat_rect)
+
+    def test_collision_with_ball(self, ball_rect):
+        """
+        Test for a collision with the ball. Return a tuple (is_collision, angle_modifier).
+        The angle_modifier is determined by which part of the bat the collision is with.
+        N.B. angle_modifier will be None when no collision.wwwws
+        """
+        top_left_x, top_left_y = self.top_left
+        section_height = self.HEIGHT // 3
+        top_section = pygame.Rect(top_left_x, top_left_y, self.WIDTH, section_height)
+        if top_section.colliderect(ball_rect):
+            angle_modifier = radians(-1 * self._ANGLE_MODIFIER)
+            if self.side_of_board == LeftOrRight.RIGHT:
+                angle_modifier *= -1
+            return True, angle_modifier
+
+        bottom_section_top_left_y = top_left_y + self.HEIGHT - section_height
+        bottom_section = pygame.Rect(top_left_x, bottom_section_top_left_y,
+                                     self.WIDTH, section_height)
+        if bottom_section.colliderect(ball_rect):
+            angle_modifier = radians(self._ANGLE_MODIFIER)
+            if self.side_of_board == LeftOrRight.RIGHT:
+                angle_modifier *= -1
+            return True, angle_modifier
+
+        middle_section = pygame.Rect(top_left_x, top_left_y + section_height,
+                                     self.WIDTH, section_height)
+        if middle_section.colliderect(ball_rect):
+            return True, 0
+        
+        return False, None
+        

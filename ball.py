@@ -69,9 +69,12 @@ class Ball:
         In order to prevent the ball going through the bat, the maximum speed
         is the same number of pixels as the bat width.
         """
-        if self._surf.colliderect(bat.surf):
+        collision, angle_modifier = bat.test_collision_with_ball(self._surf)
+        
+        if collision:
             if self._x_direction() == bat.side_of_board:
                 self._direction = math.pi - self._direction
+                self._direction += angle_modifier
                 # 2 pi is a complete circle. Save memory thus:
                 self._direction = self._direction % (2 * math.pi)
                 self._speed += self._ACCEL_RATE
