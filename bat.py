@@ -14,7 +14,7 @@ class Bat:
     WIDTH = 20
     HEIGHT = 70
     COLOUR = (255, 255, 255)
-    _ANGLE_MODIFIER = 20
+    ANGLE_MODIFIER = 20
 
     def __init__(self, up_key, down_key, board_width, board_height,
                  is_right_hand_bat=False):
@@ -91,7 +91,7 @@ class Bat:
         section_height = self.HEIGHT // 3
         top_section = pygame.Rect(top_left_x, top_left_y, self.WIDTH, section_height)
         if top_section.colliderect(ball_rect):
-            angle_modifier = radians(-1 * self._ANGLE_MODIFIER)
+            angle_modifier = radians(-1 * self.ANGLE_MODIFIER)
             if self.side_of_board == LeftOrRight.RIGHT:
                 angle_modifier *= -1
             return True, angle_modifier
@@ -100,7 +100,7 @@ class Bat:
         bottom_section = pygame.Rect(top_left_x, bottom_section_top_left_y,
                                      self.WIDTH, section_height)
         if bottom_section.colliderect(ball_rect):
-            angle_modifier = radians(self._ANGLE_MODIFIER)
+            angle_modifier = radians(self.ANGLE_MODIFIER)
             if self.side_of_board == LeftOrRight.RIGHT:
                 angle_modifier *= -1
             return True, angle_modifier

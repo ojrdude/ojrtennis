@@ -2,7 +2,6 @@
 The ball in ojrtennis
 """
 import random
-from math import sin, cos, radians
 import math
 import pygame
 from utilities import LeftOrRight
@@ -32,8 +31,8 @@ class Ball:
         """
         Move the ball in the direction it is travelling.
         """
-        x_movement = self._speed * cos(self._direction)
-        y_movement = self._speed * sin(self._direction)
+        x_movement = self._speed * math.cos(self._direction)
+        y_movement = self._speed * math.sin(self._direction)
         self.x_coord += round(x_movement)
         self.y_coord += round(y_movement)
 
@@ -59,7 +58,7 @@ class Ball:
         if random.choice([1, 2]) == 2:
             random_direction += 180
 
-        return radians(random_direction)
+        return math.radians(random_direction)
 
     def test_collision_with_bat(self, bat):
         """
@@ -75,8 +74,9 @@ class Ball:
             if self._x_direction() == bat.side_of_board:
                 self._direction = math.pi - self._direction
                 self._direction += angle_modifier
-                # 2 pi is a complete circle. Save memory thus:
-                self._direction = self._direction % (2 * math.pi)
+
+                self._limit_angle(bat)
+
                 self._speed += self._ACCEL_RATE
                 if self._speed > bat.WIDTH:
                     self._speed = bat.WIDTH
@@ -86,7 +86,7 @@ class Ball:
         Return LeftOrRight.RIGHT if the ball is heading in a right-bound direction i.e. its x-axis
         direction is positive. Return LeftOrRight.LEFT otherwise
         """
-        if cos(self._direction) > 0:
+        if math.cos(self._direction) > 0:
             return LeftOrRight.RIGHT
         return LeftOrRight.LEFT
 
@@ -112,3 +112,23 @@ class Ball:
         if self.x_coord > board_width:
             return True, LeftOrRight.LEFT
         return False, None
+
+    def _limit_angle(self, bat):
+        """
+        Limit the angle of the ball so that it doesn't start travelling too up & down
+        or passes through the bat because the angle_modifier sends it that direction.
+        """
+        # 2 pi is a complete circle. Save memory thus (and simplify calculations):
+        self._direction = self._direction % (2 * math.pi)
+        if bat.side_of_board == LeftOrRight.RIGHT:
+            if self._direction < math.pi - math.radians(bat.ANGLE_MODIFIER):
+                self._direction = math.pi - bat.ANGLE_MODIFIER
+            elif self._direction > math.pi + math.radians(bat.ANGLE_MODIFIER):
+                self._direction = math.pi + bat.ANGLE_MODIFIER
+        else:
+            if self._direction > math.radians(bat.ANGLE_MODIFIER) and \
+                   self._direction < math.pi:
+                self._direction = bat.ANGLE_MODIFIER
+            elif self._direction < 2 * math.pi - math.radians(bat.ANGLE_MODIFIER) \
+                    and self._direction > math.pi:
+                self._direction = 2 * math.pi - bat.ANGLE_MODIFIER
