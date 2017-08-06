@@ -2,7 +2,7 @@
 The ball in ojrtennis
 """
 import random
-from math import sin, cos, radians, acos
+from math import sin, cos, radians
 import math
 import pygame
 from utilities import LeftOrRight
@@ -12,11 +12,11 @@ class Ball:
     Represents the ball in ojrtennis. The ball has x and y coordinates,
     speed and direction.
     """
-    
+
     RADIUS = 3
     COLOUR = (255, 255, 255)
     _ACCEL_RATE = 1
-    
+
     def __init__(self, start_x, start_y):
         self.x_coord = round(start_x)
         self.y_coord = round(start_y)
@@ -36,14 +36,14 @@ class Ball:
         y_movement = self._speed * sin(self._direction)
         self.x_coord += round(x_movement)
         self.y_coord += round(y_movement)
-        
+
     def draw(self, surface):
         """
         Draw the ball on the surface.
         """
         ball_pos = (self.x_coord, self.y_coord)
         self._surf = pygame.draw.circle(surface, self.COLOUR, ball_pos,
-                           self.RADIUS)
+                                        self.RADIUS)
 
     @staticmethod
     def _get_random_start_direction():
@@ -70,7 +70,7 @@ class Ball:
         is the same number of pixels as the bat width.
         """
         collision, angle_modifier = bat.test_collision_with_ball(self._surf)
-        
+
         if collision:
             if self._x_direction() == bat.side_of_board:
                 self._direction = math.pi - self._direction

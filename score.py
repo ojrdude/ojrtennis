@@ -1,17 +1,20 @@
 """
-ojrtennis scoring module.   
+ojrtennis scoring module.
 """
 
 import pygame.font
 from utilities import LeftOrRight
 
 class Score:
+    """
+    Keeps track of the game score.
+    """
 
     pygame.font.init()
     _FONT_SIZE = 50
     _FONT = pygame.font.Font('freesansbold.ttf', _FONT_SIZE)
     _COLOUR = (255, 255, 255)
-    
+
     def __init__(self):
         self._left_score = 0
         self._right_score = 0
@@ -36,7 +39,7 @@ class Score:
         LeftOrRight.LEFT or LeftOrRight.RIGHT.
         """
         assert isinstance(scored_by, LeftOrRight)
-        
+
         if scored_by == LeftOrRight.LEFT:
             self._left_score += 1
         else:
@@ -48,4 +51,3 @@ class Score:
         Return the score as a tuple of (left_score, right_score)
         """
         return (self._left_score, self._right_score)
-

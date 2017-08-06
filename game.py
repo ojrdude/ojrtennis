@@ -1,14 +1,24 @@
 """
 Base game module of ojrtennis.
 """
-import pygame
+
 import sys
+import pygame
+# pylint: disable=unused-wildcard-import, wildcard-import
+# pygame.locals is designed to be safe to wildcard import. Obviously not every value
+# is used!
 from pygame.locals import *
+# pylint: enable=unused-wildcard-import, wildcard-import
 from bat import Bat
 from ball import Ball
 from score import Score
 
 class Game:
+    """
+    Orchestrates the running of the game. Contains the run loop etc.
+    """
+    # pylint: disable=too-few-public-methods
+    # This class doesn't need more methods.
 
     _WINDOW_WIDTH = 640
     _WINDOW_HEIGHT = 480
@@ -17,7 +27,7 @@ class Game:
     _BG_COLOUR = (0, 0, 0)
 
     _POINTS_TO_WIN = 5
-    
+
     _FONT_SIZE = 50
     _FONT = pygame.font.Font('freesansbold.ttf', _FONT_SIZE)
     _TEXT_COLOUR = (255, 255, 255)
@@ -30,9 +40,12 @@ class Game:
                                                       self._WINDOW_HEIGHT))
         pygame.display.set_caption('ojrtennis')
         self._fps_clock = pygame.time.Clock()
-        
+
+        self._ball = None
+        self._bat_1 = None
+        self._bat_2 = None
         self._reset_game()
-        
+
     def main(self):
         """
         Main entry point for game
@@ -55,7 +68,8 @@ class Game:
             pygame.display.update()
             self._fps_clock.tick(self._FPS)
 
-    def _check_for_quit(self):
+    @staticmethod
+    def _check_for_quit():
         """
         Check if the user wants to quit.
         """
@@ -85,7 +99,7 @@ class Game:
     def _draw(self):
         """
         Draw the game in its current state.
-        """ 
+        """
         self._bat_1.draw(self._display_surf)
         self._bat_2.draw(self._display_surf)
         self._ball.draw(self._display_surf)
@@ -124,7 +138,7 @@ class Game:
         ball_x = self._WINDOW_WIDTH / 2
         ball_y = self._WINDOW_HEIGHT / 2
         self._ball = Ball(ball_x, ball_y)
-        
+
     def _test_victory(self):
         """
         Test for a player having won. If somebody has won, display the result,
@@ -140,26 +154,27 @@ class Game:
             return
 
         self._display_surf.blit(victory_text, self._VICTORY_TEXT_LOCATION)
-        
+
         # Wait a bit then restart play upon a keystroke.
         pygame.display.update()
         pygame.time.delay(3 * 1000)
-        
+
         self._display_surf.fill(self._BG_COLOUR)
         play_again_text_1 = self._FONT.render('Press any key',
-                                           True, self._TEXT_COLOUR)
+                                              True, self._TEXT_COLOUR)
         play_again_text_2 = self._FONT.render('to play again.',
-                                           True, self._TEXT_COLOUR)
-         
+                                              True, self._TEXT_COLOUR)
+
         self._display_surf.blit(play_again_text_1, self._PLAY_AGAIN_LINE_1_LOCATION)
         self._display_surf.blit(play_again_text_2, self._PLAY_AGAIN_LINE_2_LOCATION)
         pygame.display.update()
 
         self._await_any_key()
-        
+
         self._reset_game()
 
-    def _await_any_key(self):
+    @staticmethod
+    def _await_any_key():
         """
         Wait for the user to press any key before continuing.
         """
@@ -173,26 +188,20 @@ class Game:
                     sys.exit()
                 elif event.type == KEYDOWN:
                     return
-                
+
     def _reset_game(self):
         """
         Reset the game. Set the scores to 0 and re-centre the bats and the ball.
         """
-        self._bat_1 = Bat(K_w, K_s, self._WINDOW_HEIGHT)
-        self._bat_1.x_coord = 3 + self._bat_1.WIDTH / 2
-        self._bat_1.y_coord = self._WINDOW_HEIGHT / 2
-        
-        self._bat_2 = Bat(K_UP, K_DOWN, self._WINDOW_HEIGHT, is_right_hand_bat=True)
-        self._bat_2.x_coord = self._WINDOW_WIDTH - 3 - self._bat_2.WIDTH / 2
-        self._bat_2.y_coord = self._WINDOW_HEIGHT / 2
+        self._bat_1 = Bat(K_w, K_s, self._WINDOW_WIDTH, self._WINDOW_HEIGHT)
+        self._bat_2 = Bat(K_UP, K_DOWN, self._WINDOW_WIDTH, self._WINDOW_HEIGHT,
+                          is_right_hand_bat=True)
 
-        ball_x = self._WINDOW_WIDTH / 2
-        ball_y = self._WINDOW_HEIGHT / 2
-        self._ball = Ball(ball_x, ball_y)
+        self._reset_ball()
 
         self._score = Score()
 
-        
+
 if __name__ == '__main__':
-    game = Game()
-    game.main()
+    GAME = Game()
+    GAME.main()
