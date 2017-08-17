@@ -15,6 +15,7 @@ class Ball:
     RADIUS = 3
     COLOUR = (255, 255, 255)
     _ACCEL_RATE = 1
+    _MAX_ANGLE = math.radians(20)
 
     def __init__(self, start_x, start_y):
         self.x_coord = round(start_x)
@@ -75,7 +76,7 @@ class Ball:
                 self._direction = math.pi - self._direction
                 self._direction += angle_modifier
 
-                self._limit_angle(bat)
+                self._limit_angle(bat.side_of_board)
 
                 self._speed += self._ACCEL_RATE
                 if self._speed > bat.WIDTH:
@@ -113,22 +114,22 @@ class Ball:
             return True, LeftOrRight.LEFT
         return False, None
 
-    def _limit_angle(self, bat):
+    def _limit_angle(self, side_of_board):
         """
         Limit the angle of the ball so that it doesn't start travelling too up & down
         or passes through the bat because the angle_modifier sends it that direction.
         """
         # 2 pi is a complete circle. Save memory thus (and simplify calculations):
         self._direction = self._direction % (2 * math.pi)
-        if bat.side_of_board == LeftOrRight.RIGHT:
-            if self._direction < math.pi - math.radians(bat.ANGLE_MODIFIER):
-                self._direction = math.pi - bat.ANGLE_MODIFIER
-            elif self._direction > math.pi + math.radians(bat.ANGLE_MODIFIER):
-                self._direction = math.pi + bat.ANGLE_MODIFIER
+        if side_of_board == LeftOrRight.RIGHT:
+            if self._direction < math.pi - math.radians(self._MAX_ANGLE):
+                self._direction = math.pi - self._MAX_ANGLE
+            elif self._direction > math.pi + math.radians(self._MAX_ANGLE):
+                self._direction = math.pi + self._MAX_ANGLE
         else:
-            if self._direction > math.radians(bat.ANGLE_MODIFIER) and \
+            if self._direction > math.radians(self._MAX_ANGLE) and \
                    self._direction < math.pi:
-                self._direction = bat.ANGLE_MODIFIER
-            elif self._direction < 2 * math.pi - math.radians(bat.ANGLE_MODIFIER) \
+                self._direction = self._MAX_ANGLE
+            elif self._direction < 2 * math.pi - math.radians(self._MAX_ANGLE) \
                     and self._direction > math.pi:
-                self._direction = 2 * math.pi - bat.ANGLE_MODIFIER
+                self._direction = 2 * math.pi - self._MAX_ANGLE
