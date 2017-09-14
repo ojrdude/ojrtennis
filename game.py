@@ -2,6 +2,7 @@
 Base game module of ojrtennis.
 """
 
+import logging
 import sys
 import pygame
 # pylint: disable=unused-wildcard-import, wildcard-import
@@ -41,6 +42,9 @@ class Game:
         pygame.display.set_caption('ojrtennis')
         self._fps_clock = pygame.time.Clock()
 
+        logging.basicConfig(level=logging.INFO)
+        self._logger = logging.getLogger('game')
+
         self._ball = None
         self._bat_1 = None
         self._bat_2 = None
@@ -68,18 +72,15 @@ class Game:
             pygame.display.update()
             self._fps_clock.tick(self._FPS)
 
-    @staticmethod
-    def _check_for_quit():
+    def _check_for_quit(self):
         """
         Check if the user wants to quit.
         """
         for event in pygame.event.get():
             if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
+                self._quit('Quit Event - Exiting')
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
-                pygame.quit()
-                sys.exit()
+                self._quit('Escape Key pressed - Exiting')
 
     def _handle_bat_movement(self):
         """
@@ -147,8 +148,10 @@ class Game:
         """
         left_score, right_score = self._score.score
         if left_score == self._POINTS_TO_WIN:
+            self._logger.info(f'Left Wins with score: {left_score}')
             victory_text = self._FONT.render('Left Wins!', True, self._TEXT_COLOUR)
         elif right_score == self._POINTS_TO_WIN:
+            self._logger.info(f'Right Wins with score: {right_score}')
             victory_text = self._FONT.render('Right Wins!', True, self._TEXT_COLOUR)
         else:
             return
@@ -173,19 +176,16 @@ class Game:
 
         self._reset_game()
 
-    @staticmethod
-    def _await_any_key():
+    def _await_any_key(self):
         """
         Wait for the user to press any key before continuing.
         """
         while True:
             for event in pygame.event.get():
                 if event.type == QUIT:
-                    pygame.quit()
-                    sys.exit()
+                    self._quit('Quit Event - Exiting')
                 elif event.type == KEYDOWN and event.key == K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
+                    self._quit('Escape Key pressed - Exiting')
                 elif event.type == KEYDOWN:
                     return
 
@@ -193,6 +193,8 @@ class Game:
         """
         Reset the game. Set the scores to 0 and re-centre the bats and the ball.
         """
+        self._logger.info('Resetting game. '
+                          'The bats are recentred a new ball created.')
         self._bat_1 = Bat(K_w, K_s, self._WINDOW_WIDTH, self._WINDOW_HEIGHT)
         self._bat_2 = Bat(K_UP, K_DOWN, self._WINDOW_WIDTH, self._WINDOW_HEIGHT,
                           is_right_hand_bat=True)
@@ -201,6 +203,14 @@ class Game:
 
         self._score = Score()
 
+    def _quit(self, log_message):
+        """
+        Log the log_message and quit the game. Shuts down Pygame before killing
+        process.
+        """
+        self._logger.info(log_message)
+        pygame.quit()
+        sys.exit()
 
 if __name__ == '__main__':
     GAME = Game()
