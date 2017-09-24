@@ -1,0 +1,31 @@
+"""
+Ojrtennis 'main' module i.e. the starting point for the game.
+"""
+import pygame
+import game
+import gamemenu
+
+class Ojrtennis: # TODO: Does this need to be a class?
+    """
+    Runs the game, handling transfers between different screens etc.
+    """
+    WINDOW_WIDTH = 640
+    WINDOW_HEIGHT = 480
+
+    def run_game(self):
+        """
+        Run the game, starting with the game menu. Creates classes to handle
+        each individual screen depending on what stage in the game we are at.
+        """
+        pygame.init()
+        display_surf = pygame.display.set_mode((self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
+        
+        game_menu = gamemenu.GameMenu(display_surf)
+        game_menu.menu_loop()
+        
+        game_screen = game.Game(display_surf)
+        game_screen.main_game_loop()
+
+if __name__ == '__main__':
+    ojrtennis = Ojrtennis()
+    ojrtennis.run_game()

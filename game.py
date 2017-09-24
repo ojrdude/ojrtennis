@@ -20,9 +20,6 @@ class Game:
     """
     # pylint: disable=too-few-public-methods
     # This class doesn't need more methods.
-
-    _WINDOW_WIDTH = 640
-    _WINDOW_HEIGHT = 480
     _FPS = 50
 
     _BG_COLOUR = (0, 0, 0)
@@ -36,28 +33,20 @@ class Game:
     _PLAY_AGAIN_LINE_2_LOCATION = (200, 200 + 1.1 * _FONT_SIZE)
     _VICTORY_TEXT_LOCATION = (200, 200)
 
-    def __init__(self):
-        self._display_surf = pygame.display.set_mode((self._WINDOW_WIDTH,
-                                                      self._WINDOW_HEIGHT))
+    def __init__(self, display_surface):
+        self._display_surf = display_surface
         pygame.display.set_caption('ojrtennis')
         self._fps_clock = pygame.time.Clock()
 
         logging.basicConfig(level=logging.INFO)
-        self._logger = logging.getLogger('game')
+        self._logger = logging.getLogger(__name__)
 
         self._ball = None
         self._bat_1 = None
         self._bat_2 = None
         self._reset_game()
 
-    def main(self):
-        """
-        Main entry point for game
-        """
-        pygame.init()
-        self._main_game_loop()
-
-    def _main_game_loop(self):
+    def main_game_loop(self):
         """
         The main game-playing loop.
         """
@@ -74,7 +63,8 @@ class Game:
 
     def _check_for_quit(self):
         """
-        Check if the user wants to quit.
+        Check if the user wants to quit. i.e. has clicked the cross or pressed
+        Esc.
         """
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -136,8 +126,8 @@ class Game:
         """
         Get a new ball and put it in the middle of the board.
         """
-        ball_x = self._WINDOW_WIDTH / 2
-        ball_y = self._WINDOW_HEIGHT / 2
+        ball_x = self._display_surf.get_width() / 2
+        ball_y = self._display_surf.get_height() / 2
         self._ball = Ball(ball_x, ball_y)
 
     def _test_victory(self):
@@ -195,8 +185,10 @@ class Game:
         """
         self._logger.info('Resetting game. '
                           'The bats are recentred a new ball created.')
-        self._bat_1 = Bat(K_w, K_s, self._WINDOW_WIDTH, self._WINDOW_HEIGHT)
-        self._bat_2 = Bat(K_UP, K_DOWN, self._WINDOW_WIDTH, self._WINDOW_HEIGHT,
+        self._bat_1 = Bat(K_w, K_s, self._display_surf.get_width(),
+                          self._display_surf.get_height())
+        self._bat_2 = Bat(K_UP, K_DOWN, self._display_surf.get_width(),
+                          self._display_surf.get_height(),
                           is_right_hand_bat=True)
 
         self._reset_ball()
@@ -211,7 +203,3 @@ class Game:
         self._logger.info(log_message)
         pygame.quit()
         sys.exit()
-
-if __name__ == '__main__':
-    GAME = Game()
-    GAME.main()
