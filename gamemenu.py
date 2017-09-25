@@ -105,26 +105,47 @@ class GameMenu:
         y_coord_middle_screen = self._display_surf.get_height() // 2
         y_coord_item = y_coord_middle_screen - self._GAP_BETWEEN_OPTIONS // 2 \
                          - self._FONT_SIZE
-        option_text = self._FONT.render(above_middle_options[0].text, True,
-                                        self._TEXT_COLOUR)
-        self._display_surf.blit(option_text, (100, y_coord_item))
+        x_coord_item = self._calculate_x_for_centre(self._display_surf.get_width(),
+                                                    above_middle_options[0].text)
+        self._render_menu_item(above_middle_options[0], x_coord_item, y_coord_item)
         for option in above_middle_options[1:]:
             y_coord_item -= self._GAP_BETWEEN_OPTIONS + self._FONT_SIZE
-            option_text = self._FONT.render(option.text, True, self._TEXT_COLOUR)
-            self._display_surf.blit(option_text, (100, y_coord_item))
+            x_coord_item = self._calculate_x_for_centre(
+                self._display_surf.get_width(),
+                option.text
+                )
+            self._render_menu_item(option, x_coord_item, y_coord_item)
 
         # Draw items below middle of screen
         below_middle_options = self._OPTIONS[len(self._OPTIONS) // 2:]
         y_coord_item = y_coord_middle_screen + self._GAP_BETWEEN_OPTIONS // 2
-        option_text = self._FONT.render(below_middle_options[0].text, True,
-                                        self._TEXT_COLOUR)
-        self._display_surf.blit(option_text, (100, y_coord_item))
+        x_coord_item = self._calculate_x_for_centre(self._display_surf.get_width(),
+                                                    below_middle_options[0].text)
+        self._render_menu_item(below_middle_options[0], x_coord_item, y_coord_item)
         for option in below_middle_options[1:]:
             y_coord_item += self._GAP_BETWEEN_OPTIONS + self._FONT_SIZE
-            option_text = self._FONT.render(option.text, True, self._TEXT_COLOUR)
-            self._display_surf.blit(option_text, (100, y_coord_item))
-            
-            
+            x_coord_item = self._calculate_x_for_centre(
+                self._display_surf.get_width(),
+                option.text
+                )
+            self._render_menu_item(option, x_coord_item, y_coord_item)
+
+    def _calculate_x_for_centre(self, screen_width, word):
+        """
+        Return the x coordinate to write the word at so that it appears centrally
+        for the given screen width.
+        """
+        centre_screen_x = screen_width // 2
+        word_width, _ = self._FONT.size(word)
+        return centre_screen_x - word_width / 2
+
+    def _render_menu_item(self, menu_item, x_coord, y_coord):
+        """
+        Render a menu item at (x_coord, y_coord) on the screen.
+        """
+        menu_item_text = self._FONT.render(menu_item.text, True, self._TEXT_COLOUR)
+        self._display_surf.blit(menu_item_text, (x_coord, y_coord))
+        
     def _quit(self, log_message):
         """
         Log the log_message and quit the game. Shuts down Pygame before killing
