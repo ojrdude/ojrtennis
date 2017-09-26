@@ -87,7 +87,9 @@ class GameMenu:
         """
         while True:
             self._check_for_quit()
-            self._check_for_user_input()
+            self._handle_selection_change()
+            if self._is_user_confirming_option():
+                return self._highlighted_option.return_value
             
             self._display_surf.fill(self._BG_COLOUR)
             self._draw_menu_items()
@@ -108,18 +110,29 @@ class GameMenu:
             else:
                 pygame.event.post(event)
 
-    def _check_for_user_input(self):
+    def _handle_selection_change(self):
         """
         Check if the user is trying to select a different option on the menu
-        or confirming the selection by using the arrow keys or return respectively.
+        by using the arrow keys. Change the highlighted option.
         """
         for event in pygame.event.get():
-            if event.type == KEYDOWN:
-                if event.key == K_UP:
+            if event.type == KEYDOWN and event.key == K_UP:
                     self._highlight_previous_option()
-                elif event.key == K_DOWN:
+            elif event.type == KEYDOWN  and event.key == K_DOWN:
                     self._highlight_next_option()
-            
+            else:
+                pygame.event.post(event)
+
+    def _is_user_confirming_option(self):
+        """
+        Return True if the user has pressed return, indicating that he/she has chosen
+        the currently highlighted option.
+        """
+        for event in pygame.event.get():
+            if event.type == KEYDOWN and event.key == K_RETURN:
+                return True
+        return False
+    
     def _draw_menu_items(self):
         """
         Draw all the possible menu items on the screen, showing the currently
