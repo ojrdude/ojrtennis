@@ -71,6 +71,15 @@ class GameMenu:
         logging.basicConfig(level=logging.INFO)
         self._logger = logging.getLogger(__name__)
 
+        self._selected_option_number = 0
+
+    @property
+    def _highlighted_option(self):
+        """
+        Return the hightlighted option in the menu
+        """
+        return self._OPTIONS[self._selected_option_number]
+    
     def menu_loop(self):
         """
         Loops through every frame and handles the user input to change the selection
@@ -78,6 +87,8 @@ class GameMenu:
         """
         while True:
             self._check_for_quit()
+            self._check_for_user_input()
+            
             self._display_surf.fill(self._BG_COLOUR)
             self._draw_menu_items()
 
@@ -94,7 +105,21 @@ class GameMenu:
                 self._quit('Quit Event - Exiting')
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 self._quit('Escape Key pressed - Exiting')
+            else:
+                pygame.event.post(event)
 
+    def _check_for_user_input(self):
+        """
+        Check if the user is trying to select a different option on the menu
+        or confirming the selection by using the arrow keys or return respectively.
+        """
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_UP:
+                    self._highlight_previous_option()
+                elif event.key == K_DOWN:
+                    self._highlight_next_option()
+            
     def _draw_menu_items(self):
         """
         Draw all the possible menu items on the screen, showing the currently
@@ -106,13 +131,13 @@ class GameMenu:
         y_coord_item = y_coord_middle_screen - self._GAP_BETWEEN_OPTIONS // 2 \
                          - self._FONT_SIZE
         x_coord_item = self._calculate_x_for_centre(self._display_surf.get_width(),
-                                                    above_middle_options[0].text)
+                                                    above_middle_options[0])
         self._render_menu_item(above_middle_options[0], x_coord_item, y_coord_item)
         for option in above_middle_options[1:]:
             y_coord_item -= self._GAP_BETWEEN_OPTIONS + self._FONT_SIZE
             x_coord_item = self._calculate_x_for_centre(
                 self._display_surf.get_width(),
-                option.text
+                option
                 )
             self._render_menu_item(option, x_coord_item, y_coord_item)
 
@@ -120,28 +145,30 @@ class GameMenu:
         below_middle_options = self._OPTIONS[len(self._OPTIONS) // 2:]
         y_coord_item = y_coord_middle_screen + self._GAP_BETWEEN_OPTIONS // 2
         x_coord_item = self._calculate_x_for_centre(self._display_surf.get_width(),
-                                                    below_middle_options[0].text)
+                                                    below_middle_options[0])
         self._render_menu_item(below_middle_options[0], x_coord_item, y_coord_item)
         for option in below_middle_options[1:]:
             y_coord_item += self._GAP_BETWEEN_OPTIONS + self._FONT_SIZE
             x_coord_item = self._calculate_x_for_centre(
                 self._display_surf.get_width(),
-                option.text
+                option
                 )
             self._render_menu_item(option, x_coord_item, y_coord_item)
 
-    def _calculate_x_for_centre(self, screen_width, word):
+    def _calculate_x_for_centre(self, screen_width, option):
         """
-        Return the x coordinate to write the word at so that it appears centrally
+        Return the x coordinate to write the option text at so that it appears centrally
         for the given screen width.
         """
         centre_screen_x = screen_width // 2
-        word_width, _ = self._FONT.size(word)
+        self._FONT.set_bold(option == self._highlighted_option)
+        word_width, _ = self._FONT.size(option.text)
         return centre_screen_x - word_width / 2
 
     def _render_menu_item(self, menu_item, x_coord, y_coord):
         """
-        Render a menu item at (x_coord, y_coord) on the screen.
+        Render a menu item at (x_coord, y_coord) on the screen. If the item is the
+        currently selected, render it in bold.
         """
         menu_item_text = self._FONT.render(menu_item.text, True, self._TEXT_COLOUR)
         self._display_surf.blit(menu_item_text, (x_coord, y_coord))
@@ -154,3 +181,21 @@ class GameMenu:
         self._logger.info(log_message)
         pygame.quit()
         sys.exit()
+
+    def _highlight_next_option(self):
+        """
+        Change the highlighted (i.e. selected) option to be the next in self._OPTIONS.
+        If the currently selected is last in the list, change the highlighted to be
+        the first in the list.
+        """
+        self._selected_option_number = (self._selected_option_number + 1)\
+                                       % len(self._OPTIONS)
+
+    def _highlight_previous_option(self):
+        """
+        Change the highlighted (i.e. selected) option to be the previous one in
+        self._OPTIONS. If the currently selected is the first in the list, change the
+        highlighted to be the last in the list.
+        """
+        self._selected_option_number = (self._selected_option_number - 1)\
+                                       % len(self._OPTIONS)
