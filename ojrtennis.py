@@ -24,18 +24,20 @@ class Ojrtennis: # TODO: Does this need to be a class?
         """
         pygame.init()
         display_surf = pygame.display.set_mode((self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
-        
-        game_menu = gamemenu.GameMenu(display_surf)
-        user_choice = game_menu.menu_loop()
 
-        if user_choice == gamemenu.MenuReturnValue.GAME:
-            self._logger.info('Game option selected, starting game.')
-            game_screen = game.Game(display_surf)
-            game_screen.main_game_loop()
-        elif user_choice == gamemenu.MenuReturnValue.QUIT:
-            self._logger.info('Quit option selected, quiting')
-            pygame.quit()
-            sys.exit()
+        while True:
+            game_menu = gamemenu.GameMenu(display_surf)
+            user_choice = game_menu.menu_loop()
+
+            if user_choice == gamemenu.MenuReturnValue.GAME:
+                self._logger.info('Game option selected, starting game.')
+                game_screen = game.Game(display_surf)
+                game_screen.main_game_loop()
+                self._logger.info('Game has ended, returning to menu.')
+            elif user_choice == gamemenu.MenuReturnValue.QUIT:
+                self._logger.info('Quit option selected, quiting.')
+                pygame.quit()
+                sys.exit()
         
 if __name__ == '__main__':
     ojrtennis = Ojrtennis()

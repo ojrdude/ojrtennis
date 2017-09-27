@@ -57,7 +57,11 @@ class Game:
             self._draw()
             self._test_collisions()
             self._test_point_scored()
-            self._test_victory()
+
+            is_game_over = self._test_victory()
+            if is_game_over:
+                return
+
             pygame.display.update()
             self._fps_clock.tick(self._FPS)
 
@@ -144,40 +148,15 @@ class Game:
             self._logger.info(f'Right Wins with score: {right_score}')
             victory_text = self._FONT.render('Right Wins!', True, self._TEXT_COLOUR)
         else:
-            return
+            return False
 
         self._display_surf.blit(victory_text, self._VICTORY_TEXT_LOCATION)
 
-        # Wait a bit then restart play upon a keystroke.
+        # Display the victory message for a few seconds before returning.
         pygame.display.update()
         pygame.time.delay(3 * 1000)
 
-        self._display_surf.fill(self._BG_COLOUR)
-        play_again_text_1 = self._FONT.render('Press any key',
-                                              True, self._TEXT_COLOUR)
-        play_again_text_2 = self._FONT.render('to play again.',
-                                              True, self._TEXT_COLOUR)
-
-        self._display_surf.blit(play_again_text_1, self._PLAY_AGAIN_LINE_1_LOCATION)
-        self._display_surf.blit(play_again_text_2, self._PLAY_AGAIN_LINE_2_LOCATION)
-        pygame.display.update()
-
-        self._await_any_key()
-
-        self._reset_game()
-
-    def _await_any_key(self):
-        """
-        Wait for the user to press any key before continuing.
-        """
-        while True:
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    self._quit('Quit Event - Exiting')
-                elif event.type == KEYDOWN and event.key == K_ESCAPE:
-                    self._quit('Escape Key pressed - Exiting')
-                elif event.type == KEYDOWN:
-                    return
+        return True
 
     def _reset_game(self):
         """
