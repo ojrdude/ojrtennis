@@ -21,7 +21,7 @@ class Ojrtennis:
         self._logger = logging.getLogger(self.__class__.__name__)
 
         pygame.display.set_caption('ojrtennis')
-    
+
     def run_game(self):
         """
         Run the game, starting with the game menu. Creates classes to handle
@@ -32,12 +32,12 @@ class Ojrtennis:
 
         while True:
             game_menu = gamemenu.GameMenu(display_surf)
-            user_choice = game_menu.menu_loop()
+            user_choice = game_menu.main_screen_loop()
 
             if user_choice == gamemenu.MenuReturnValue.GAME:
                 self._logger.info('Game option selected, starting game.')
                 game_screen = game.Game(display_surf)
-                game_screen.main_game_loop()
+                game_screen.main_screen_loop()
                 self._logger.info('Game has ended, returning to menu.')
             elif user_choice == gamemenu.MenuReturnValue.QUIT:
                 self._logger.info('Quit option selected, quiting.')
@@ -46,5 +46,4 @@ class Ojrtennis:
 
 
 if __name__ == '__main__':
-    ojrtennis = Ojrtennis()
-    ojrtennis.run_game()
+    Ojrtennis().run_game()

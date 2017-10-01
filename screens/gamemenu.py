@@ -17,7 +17,7 @@ class MenuReturnValue(Enum):
     caller by GameMenu. Could later have options like '1-player', '2-player' etc.
     """
     GAME = 1
-    QUIT = 2    
+    QUIT = 2
 
 
 class GameMenu(AbstractScreen):
@@ -25,7 +25,7 @@ class GameMenu(AbstractScreen):
     Displays the menu to the user, controls the user's navigation within it and
     returns his/her choice of option.
     """
-    
+
     _FPS = 50
 
     _BG_COLOUR = (0, 0, 0)
@@ -33,19 +33,23 @@ class GameMenu(AbstractScreen):
     _FONT_SIZE = 50
     _FONT = pygame.font.Font('freesansbold.ttf', _FONT_SIZE)
     _GAP_BETWEEN_OPTIONS = 30
-    
+
     _TEXT_COLOUR = (255, 255, 255)
 
     _OPTIONS = [
         MenuItem('Start', MenuReturnValue.GAME),
         MenuItem('Quit', MenuReturnValue.QUIT),
         # Uncomment the below options to check menu renders properly with more options
+        # pylint: disable=bad-continuation
+        # The auto-comment/uncoment feature in IDLE puts comments at start of line.
+        # The convenience outweighs the code 'badness'
 ##        MenuItem('Bollocks1', MenuReturnValue.QUIT),
 ##        MenuItem('MORE BOLLOCKS', MenuReturnValue.QUIT),
 ##        MenuItem('B0110ck5', MenuReturnValue.QUIT),
 ##        MenuItem('twat', MenuReturnValue.QUIT),
+        # pylint: enable=bad-continuation
         ]
-    
+
     def __init__(self, display_surface):
         super(GameMenu, self).__init__(display_surface)
         self._selected_option_number = 0
@@ -56,8 +60,8 @@ class GameMenu(AbstractScreen):
         Return the hightlighted option in the menu
         """
         return self._OPTIONS[self._selected_option_number]
-    
-    def menu_loop(self):
+
+    def main_screen_loop(self):
         """
         Loops through every frame and handles the user input to change the selection
         or return the choice to the caller.
@@ -67,7 +71,7 @@ class GameMenu(AbstractScreen):
             self._handle_selection_change()
             if self._is_user_confirming_option():
                 return self._highlighted_option.return_value
-            
+
             self._display_surf.fill(self._BG_COLOUR)
             self._draw_menu_items()
 
@@ -81,13 +85,14 @@ class GameMenu(AbstractScreen):
         """
         for event in pygame.event.get():
             if event.type == pgLocals.KEYDOWN and event.key == pgLocals.K_UP:
-                    self._highlight_previous_option()
+                self._highlight_previous_option()
             elif event.type == pgLocals.KEYDOWN  and event.key == pgLocals.K_DOWN:
-                    self._highlight_next_option()
+                self._highlight_next_option()
             else:
                 pygame.event.post(event)
 
-    def _is_user_confirming_option(self):
+    @staticmethod
+    def _is_user_confirming_option():
         """
         Return True if the user has pressed return, indicating that he/she has chosen
         the currently highlighted option.
@@ -96,7 +101,7 @@ class GameMenu(AbstractScreen):
             if event.type == pgLocals.KEYDOWN and event.key == pgLocals.K_RETURN:
                 return True
         return False
-    
+
     def _draw_menu_items(self):
         """
         Draw all the possible menu items on the screen, showing the currently

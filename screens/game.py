@@ -35,7 +35,7 @@ class Game(AbstractScreen):
         self._bat_2 = None
         self._reset_game()
 
-    def main_game_loop(self):
+    def main_screen_loop(self):
         """
         The main game-playing loop.
         """
