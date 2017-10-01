@@ -19,7 +19,7 @@ class Score:
     def __init__(self):
         self._left_score = 0
         self._right_score = 0
-        self._logger = logging.getLogger(__name__)
+        self._logger = logging.getLogger(self.__class__.__name__)
 
     def draw(self, display_surf):
         """

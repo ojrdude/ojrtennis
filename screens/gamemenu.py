@@ -1,18 +1,15 @@
 """
 The game menu.
 """
+import collections
 from enum import Enum
-import logging
-import sys
 
 import pygame
-# pylint: disable=unused-wildcard-import, wildcard-import
-# pygame.locals is designed to be safe to wildcard import. Obviously not every value
-# is used!
-from pygame.locals import *
-# pylint: enable=unused-wildcard-import, wildcard-import
+import pygame.locals as pgLocals
 
-pygame.init() # TODO: Work out why I need this here. Doesn't seem right to me.
+from screens.abstractscreen import AbstractScreen
+
+MenuItem = collections.namedtuple('MenuItem', ['text', 'return_value'])
 
 class MenuReturnValue(Enum):
     """
@@ -20,20 +17,10 @@ class MenuReturnValue(Enum):
     caller by GameMenu. Could later have options like '1-player', '2-player' etc.
     """
     GAME = 1
-    QUIT = 2
+    QUIT = 2    
 
 
-class MenuItem: # TODO: Is this just a namedtuple?
-    """
-    Represents an item on the menu that is displayed to the user.
-    """
-
-    def __init__(self, text, return_value):
-        self.text = text
-        self.return_value = return_value
-
-
-class GameMenu:
+class GameMenu(AbstractScreen):
     """
     Displays the menu to the user, controls the user's navigation within it and
     returns his/her choice of option.
@@ -60,17 +47,7 @@ class GameMenu:
         ]
     
     def __init__(self, display_surface):
-        # TODO: factor out a superclass Screen for Game, GameMenu as they both
-        # have self._display_surf and are both Screens
-        # Common methods: _check_for_quit, _quit
-        # Common attributes: _fps_clock, _logger
-        # Common but leave uncoupled for now: _BG_COLOUR
-        self._display_surf = display_surface
-        self._fps_clock = pygame.time.Clock()
-
-        logging.basicConfig(level=logging.INFO)
-        self._logger = logging.getLogger(__name__)
-
+        super(GameMenu, self).__init__(display_surface)
         self._selected_option_number = 0
 
     @property
@@ -97,28 +74,15 @@ class GameMenu:
             pygame.display.update()
             self._fps_clock.tick(self._FPS)
 
-    def _check_for_quit(self):
-        """
-        Check if the user wants to quit i.e. has clicked the cross or pressed
-        Esc.
-        """
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                self._quit('Quit Event - Exiting')
-            elif event.type == KEYDOWN and event.key == K_ESCAPE:
-                self._quit('Escape Key pressed - Exiting')
-            else:
-                pygame.event.post(event)
-
     def _handle_selection_change(self):
         """
         Check if the user is trying to select a different option on the menu
         by using the arrow keys. Change the highlighted option.
         """
         for event in pygame.event.get():
-            if event.type == KEYDOWN and event.key == K_UP:
+            if event.type == pgLocals.KEYDOWN and event.key == pgLocals.K_UP:
                     self._highlight_previous_option()
-            elif event.type == KEYDOWN  and event.key == K_DOWN:
+            elif event.type == pgLocals.KEYDOWN  and event.key == pgLocals.K_DOWN:
                     self._highlight_next_option()
             else:
                 pygame.event.post(event)
@@ -129,7 +93,7 @@ class GameMenu:
         the currently highlighted option.
         """
         for event in pygame.event.get():
-            if event.type == KEYDOWN and event.key == K_RETURN:
+            if event.type == pgLocals.KEYDOWN and event.key == pgLocals.K_RETURN:
                 return True
         return False
     
@@ -185,15 +149,6 @@ class GameMenu:
         """
         menu_item_text = self._FONT.render(menu_item.text, True, self._TEXT_COLOUR)
         self._display_surf.blit(menu_item_text, (x_coord, y_coord))
-        
-    def _quit(self, log_message):
-        """
-        Log the log_message and quit the game. Shuts down Pygame before killing
-        process.
-        """
-        self._logger.info(log_message)
-        pygame.quit()
-        sys.exit()
 
     def _highlight_next_option(self):
         """

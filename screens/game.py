@@ -1,25 +1,19 @@
 """
-Base game module of ojrtennis.
+Main game screen module of ojrtennis.
 """
 
-import logging
-import sys
 import pygame
-# pylint: disable=unused-wildcard-import, wildcard-import
-# pygame.locals is designed to be safe to wildcard import. Obviously not every value
-# is used!
-from pygame.locals import *
-# pylint: enable=unused-wildcard-import, wildcard-import
+import pygame.locals as pgLocals
+
 from bat import Bat
 from ball import Ball
 from score import Score
+from screens.abstractscreen import AbstractScreen
 
-class Game:
+class Game(AbstractScreen):
     """
-    Orchestrates the running of the game. Contains the run loop etc.
+    Orchestrates the running of the main game screen with the bats and the balls.
     """
-    # pylint: disable=too-few-public-methods
-    # This class doesn't need more methods.
     _FPS = 50
 
     _BG_COLOUR = (0, 0, 0)
@@ -34,12 +28,7 @@ class Game:
     _VICTORY_TEXT_LOCATION = (200, 200)
 
     def __init__(self, display_surface):
-        self._display_surf = display_surface
-        pygame.display.set_caption('ojrtennis')
-        self._fps_clock = pygame.time.Clock()
-
-        logging.basicConfig(level=logging.INFO)
-        self._logger = logging.getLogger(__name__)
+        super(Game, self).__init__(display_surface)
 
         self._ball = None
         self._bat_1 = None
@@ -64,17 +53,6 @@ class Game:
 
             pygame.display.update()
             self._fps_clock.tick(self._FPS)
-
-    def _check_for_quit(self):
-        """
-        Check if the user wants to quit. i.e. has clicked the cross or pressed
-        Esc.
-        """
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                self._quit('Quit Event - Exiting')
-            elif event.type == KEYDOWN and event.key == K_ESCAPE:
-                self._quit('Escape Key pressed - Exiting')
 
     def _handle_bat_movement(self):
         """
@@ -164,21 +142,14 @@ class Game:
         """
         self._logger.info('Resetting game. '
                           'The bats are recentred a new ball created.')
-        self._bat_1 = Bat(K_w, K_s, self._display_surf.get_width(),
+        self._bat_1 = Bat(pgLocals.K_w, pgLocals.K_s,
+                          self._display_surf.get_width(),
                           self._display_surf.get_height())
-        self._bat_2 = Bat(K_UP, K_DOWN, self._display_surf.get_width(),
+        self._bat_2 = Bat(pgLocals.K_UP, pgLocals.K_DOWN,
+                          self._display_surf.get_width(),
                           self._display_surf.get_height(),
                           is_right_hand_bat=True)
 
         self._reset_ball()
 
         self._score = Score()
-
-    def _quit(self, log_message):
-        """
-        Log the log_message and quit the game. Shuts down Pygame before killing
-        process.
-        """
-        self._logger.info(log_message)
-        pygame.quit()
-        sys.exit()

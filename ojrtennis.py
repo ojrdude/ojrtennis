@@ -1,13 +1,15 @@
 """
 Ojrtennis 'main' module i.e. the starting point for the game.
 """
-import pygame
-import game
-import gamemenu
 import logging
 import sys
 
-class Ojrtennis: # TODO: Does this need to be a class?
+import pygame
+
+from screens import game, gamemenu
+
+
+class Ojrtennis:
     """
     Runs the game, handling transfers between different screens etc.
     """
@@ -15,7 +17,10 @@ class Ojrtennis: # TODO: Does this need to be a class?
     WINDOW_HEIGHT = 480
 
     def __init__(self):
-        self._logger = logging.getLogger('ojrtennis')
+        logging.basicConfig(level=logging.INFO)
+        self._logger = logging.getLogger(self.__class__.__name__)
+
+        pygame.display.set_caption('ojrtennis')
     
     def run_game(self):
         """
@@ -38,7 +43,8 @@ class Ojrtennis: # TODO: Does this need to be a class?
                 self._logger.info('Quit option selected, quiting.')
                 pygame.quit()
                 sys.exit()
-        
+
+
 if __name__ == '__main__':
     ojrtennis = Ojrtennis()
     ojrtennis.run_game()
