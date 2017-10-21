@@ -18,7 +18,7 @@ class Bat:
     HEIGHT = 70
     COLOUR = (255, 255, 255)
     ANGLE_MODIFIER = 20
-    SERVE_ANGLE_MODIFIER = 10
+    SERVE_ANGLE_MODIFIER = 30
 
     def __init__(self, up_key, down_key, serve_key, board_width, board_height, is_right_hand_bat=False):
         """

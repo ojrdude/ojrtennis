@@ -21,20 +21,24 @@ class Ball:
     COLOUR = (255, 255, 255)
     _ACCEL_RATE = 1
     _MAX_ANGLE = math.radians(20)
+    _SERVE_SPEED = 7
 
     def __init__(self, start_x, start_y, start_state):
         assert isinstance(start_state, BallState)
+        self._logger = logging.getLogger(self.__class__.__name__)
+
         self._state = start_state
 
         self.x_coord = round(start_x)
         self.y_coord = round(start_y)
 
-        self._direction = self._get_random_start_direction()
-        # Radians anticlockwise from x axis
+        if start_state == BallState.MOVING:
+            self._direction = self._get_random_start_direction()
+            # Radians anticlockwise from x axis
+        else:
+            self._direction = 0  # Actually irrelevant because ball not moving but it is safer to set a value
 
         self._speed = 3
-
-        self._logger = logging.getLevelName(self.__class__.__name__)
 
         self._surf = None  # Set upon first draw
 
@@ -55,8 +59,7 @@ class Ball:
         self._surf = pygame.draw.circle(surface, self.COLOUR, ball_pos,
                                         self.RADIUS)
 
-    @staticmethod
-    def _get_random_start_direction():
+    def _get_random_start_direction(self):
         """
         Return a random direction to start the ball moving.
         The value will be in the range of +- 30 degrees from the x
@@ -69,7 +72,9 @@ class Ball:
         if random.choice([1, 2]) == 2:
             random_direction += 180
 
-        return math.radians(random_direction)
+        start_angle = math.radians(random_direction)
+        self._logger.info(f'Ball direction randomly set to angle={start_angle}')
+        return start_angle
 
     def test_collision_with_bat(self, bat):
         """
@@ -164,8 +169,9 @@ class Ball:
         Start the ball moving and set its initial direction.
         """
         if self._state == BallState.MOVING:
-            self._logger.warn('Attempted to start moving ball that was already moving.')
+            self._logger.warning('Attempted to start moving ball that was already moving.')
 
+        self._speed = self._SERVE_SPEED
         self._direction = direction
         self._state = BallState.MOVING
 
