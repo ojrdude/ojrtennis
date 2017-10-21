@@ -1,6 +1,8 @@
 """
 The ball in ojrtennis
 """
+from enum import Enum
+import logging
 import math
 import random
 
@@ -20,7 +22,10 @@ class Ball:
     _ACCEL_RATE = 1
     _MAX_ANGLE = math.radians(20)
 
-    def __init__(self, start_x, start_y):
+    def __init__(self, start_x, start_y, start_state):
+        assert isinstance(start_state, BallState)
+        self._state = start_state
+
         self.x_coord = round(start_x)
         self.y_coord = round(start_y)
 
@@ -28,6 +33,8 @@ class Ball:
         # Radians anticlockwise from x axis
 
         self._speed = 3
+
+        self._logger = logging.getLevelName(self.__class__.__name__)
 
         self._surf = None  # Set upon first draw
 
@@ -137,3 +144,35 @@ class Ball:
             elif self._direction < 2 * math.pi - math.radians(self._MAX_ANGLE) \
                     and self._direction > math.pi:
                 self._direction = 2 * math.pi - self._MAX_ANGLE
+
+    @property
+    def is_moving(self):
+        """
+        Return True if the ball is moving i.e. is not being served.
+        """
+        return self._state == BallState.MOVING
+
+    @property
+    def is_being_served(self):
+        """
+        Return True if the ball is being served i.e. is not moving.
+        """
+        return not self.is_moving
+
+    def start_moving(self, direction):
+        """
+        Start the ball moving and set its initial direction.
+        """
+        if self._state == BallState.MOVING:
+            self._logger.warn('Attempted to start moving ball that was already moving.')
+
+        self._direction = direction
+        self._state = BallState.MOVING
+
+
+class BallState(Enum):
+    """
+    Enumerated type of all the states the ball can be in.
+    """
+    SERVING = 1
+    MOVING = 2

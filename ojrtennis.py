@@ -27,7 +27,7 @@ class Ojrtennis:
         Run the game, starting with the game menu. Creates classes to handle
         each individual screen depending on what stage in the game we are at.
         """
-        pygame.init()
+        pygame.init()  # @UndefinedVariable
         display_surf = pygame.display.set_mode(
             (self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
 
@@ -42,7 +42,7 @@ class Ojrtennis:
                 self._logger.info('Game has ended, returning to menu.')
             elif user_choice == gamemenu.MenuReturnValue.QUIT:
                 self._logger.info('Quit option selected, quiting.')
-                pygame.quit()
+                pygame.quit()  # @UndefinedVariable
                 sys.exit()
 
 

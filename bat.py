@@ -18,26 +18,28 @@ class Bat:
     HEIGHT = 70
     COLOUR = (255, 255, 255)
     ANGLE_MODIFIER = 20
+    SERVE_ANGLE_MODIFIER = 10
 
-    def __init__(self, up_key, down_key, board_width, board_height,
-                 is_right_hand_bat=False):
+    def __init__(self, up_key, down_key, serve_key, board_width, board_height, is_right_hand_bat=False):
         """
         :param:up_key: the button that will cause the bat to move up
         :param:down_key: the button that will cause the bat to move down
+        :param:serve_key: the button that will cause the bat to serve the ball.
         :param:board_width: the number of pixels wide the board is.
         :param:board_height: the number of pixels tall the board is.
         Corresponds to the maximum value of the Bat's y coordinate.
         """
         self.up_key = up_key
         self.down_key = down_key
+        self.serve_key = serve_key
         self._maximum_y = board_height
 
         if is_right_hand_bat:
-            self._x_coord = board_width - 3 - self.WIDTH / 2
+            self._x_coord = board_width - 3 - self.WIDTH // 2
         else:
-            self._x_coord = 3 + self.WIDTH / 2
+            self._x_coord = 3 + self.WIDTH // 2
 
-        self._y_coord = board_height / 2
+        self._y_coord = board_height // 2
 
         self._speed = 3
 
@@ -51,8 +53,21 @@ class Bat:
         """
         Get the current coordinates of the top left corner of the bat.
         """
-        x_coord = self._x_coord - self.WIDTH / 2
-        y_coord = self._y_coord - self.HEIGHT / 2
+        x_coord = self._x_coord - self.WIDTH // 2
+        y_coord = self._y_coord - self.HEIGHT // 2
+        return x_coord, y_coord
+
+    @property
+    def front_centre(self):
+        """
+        Return the current coordinates of the front centre of the bat.
+        """
+        x_coord, y_coord = self.top_left
+        y_coord += self.HEIGHT // 2
+
+        if self.side_of_board == LeftOrRight.LEFT:
+            x_coord += self.WIDTH
+
         return x_coord, y_coord
 
     def move_up(self):
