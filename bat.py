@@ -3,8 +3,11 @@ Bat code for ojrtennis
 """
 
 from math import radians
+
 import pygame
+
 from utilities import LeftOrRight
+
 
 class Bat:
     """
@@ -36,7 +39,6 @@ class Bat:
 
         self._y_coord = board_height / 2
 
-
         self._speed = 3
 
         if is_right_hand_bat:
@@ -60,7 +62,7 @@ class Bat:
         """
         if self._y_coord - self._speed >= 0:
             self._y_coord -= self._speed
-        else: # Don't go off screen.
+        else:  # Don't go off screen.
             self._y_coord = 0
 
     def move_down(self):
@@ -70,7 +72,7 @@ class Bat:
         """
         if self._y_coord + self._speed <= self._maximum_y:
             self._y_coord += self._speed
-        else: # Don't go off screen
+        else:  # Don't go off screen
             self._y_coord = self._maximum_y
 
     def draw(self, surface):
@@ -89,7 +91,8 @@ class Bat:
         """
         top_left_x, top_left_y = self.top_left
         section_height = self.HEIGHT // 3
-        top_section = pygame.Rect(top_left_x, top_left_y, self.WIDTH, section_height)
+        top_section = pygame.Rect(
+            top_left_x, top_left_y, self.WIDTH, section_height)
         if top_section.colliderect(ball_rect):
             angle_modifier = radians(-1 * self.ANGLE_MODIFIER)
             if self.side_of_board == LeftOrRight.RIGHT:

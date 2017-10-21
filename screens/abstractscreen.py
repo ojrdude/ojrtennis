@@ -9,6 +9,7 @@ import sys
 import pygame
 import pygame.locals as pgLocals
 
+
 class AbstractScreen(abc.ABC):
     """
     Abstract base class which contains common methods required by all different game

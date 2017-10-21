@@ -2,13 +2,14 @@
 Main game screen module of ojrtennis.
 """
 
-import pygame
-import pygame.locals as pgLocals
 
-from bat import Bat
+import pygame
+
 from ball import Ball
+from bat import Bat
 from score import Score
 from screens.abstractscreen import AbstractScreen
+
 
 class Game(AbstractScreen):
     """
@@ -121,10 +122,12 @@ class Game(AbstractScreen):
         left_score, right_score = self._score.score
         if left_score == self._POINTS_TO_WIN:
             self._logger.info(f'Left Wins with score: {left_score}')
-            victory_text = self._FONT.render('Left Wins!', True, self._TEXT_COLOUR)
+            victory_text = self._FONT.render(
+                'Left Wins!', True, self._TEXT_COLOUR)
         elif right_score == self._POINTS_TO_WIN:
             self._logger.info(f'Right Wins with score: {right_score}')
-            victory_text = self._FONT.render('Right Wins!', True, self._TEXT_COLOUR)
+            victory_text = self._FONT.render(
+                'Right Wins!', True, self._TEXT_COLOUR)
         else:
             return False
 
@@ -142,10 +145,10 @@ class Game(AbstractScreen):
         """
         self._logger.info('Resetting game. '
                           'The bats are recentred a new ball created.')
-        self._bat_1 = Bat(pgLocals.K_w, pgLocals.K_s,
+        self._bat_1 = Bat(pygame.locals.K_w, pygame.locals.K_s,
                           self._display_surf.get_width(),
                           self._display_surf.get_height())
-        self._bat_2 = Bat(pgLocals.K_UP, pgLocals.K_DOWN,
+        self._bat_2 = Bat(pygame.locals.K_UP, pygame.locals.K_DOWN,
                           self._display_surf.get_width(),
                           self._display_surf.get_height(),
                           is_right_hand_bat=True)

@@ -3,8 +3,10 @@ ojrtennis scoring module.
 """
 
 import logging
+
 import pygame.font
 from utilities import LeftOrRight
+
 
 class Score:
     """
@@ -25,7 +27,8 @@ class Score:
         """
         Draw the current score onto the display surface.
         """
-        left_score_text = self._FONT.render(str(self._left_score), True, self._COLOUR)
+        left_score_text = self._FONT.render(
+            str(self._left_score), True, self._COLOUR)
         right_score_text = self._FONT.render(str(self._right_score), True,
                                              self._COLOUR)
 
@@ -44,10 +47,12 @@ class Score:
 
         if scored_by == LeftOrRight.LEFT:
             self._left_score += 1
-            self._logger.info('Point scored by left bat. Score: %d', self._left_score)
+            self._logger.info(
+                'Point scored by left bat. Score: %d', self._left_score)
         else:
             self._right_score += 1
-            self._logger.info('Point scored by right bat. Score: %d', self._right_score)
+            self._logger.info(
+                'Point scored by right bat. Score: %d', self._right_score)
 
     @property
     def score(self):

@@ -11,6 +11,7 @@ from screens.abstractscreen import AbstractScreen
 
 MenuItem = collections.namedtuple('MenuItem', ['text', 'return_value'])
 
+
 class MenuReturnValue(Enum):
     """
     Enumerated type of the possible menu choices that could be returned to the
@@ -43,12 +44,12 @@ class GameMenu(AbstractScreen):
         # pylint: disable=bad-continuation
         # The auto-comment/uncoment feature in IDLE puts comments at start of line.
         # The convenience outweighs the code 'badness'
-##        MenuItem('Bollocks1', MenuReturnValue.QUIT),
-##        MenuItem('MORE BOLLOCKS', MenuReturnValue.QUIT),
-##        MenuItem('B0110ck5', MenuReturnValue.QUIT),
-##        MenuItem('twat', MenuReturnValue.QUIT),
+        ##        MenuItem('Bollocks1', MenuReturnValue.QUIT),
+        ##        MenuItem('MORE BOLLOCKS', MenuReturnValue.QUIT),
+        ##        MenuItem('B0110ck5', MenuReturnValue.QUIT),
+        ##        MenuItem('twat', MenuReturnValue.QUIT),
         # pylint: enable=bad-continuation
-        ]
+    ]
 
     def __init__(self, display_surface):
         super(GameMenu, self).__init__(display_surface)
@@ -86,7 +87,7 @@ class GameMenu(AbstractScreen):
         for event in pygame.event.get():
             if event.type == pgLocals.KEYDOWN and event.key == pgLocals.K_UP:
                 self._highlight_previous_option()
-            elif event.type == pgLocals.KEYDOWN  and event.key == pgLocals.K_DOWN:
+            elif event.type == pgLocals.KEYDOWN and event.key == pgLocals.K_DOWN:
                 self._highlight_next_option()
             else:
                 pygame.event.post(event)
@@ -111,16 +112,17 @@ class GameMenu(AbstractScreen):
         above_middle_options = self._OPTIONS[len(self._OPTIONS) // 2 - 1::-1]
         y_coord_middle_screen = self._display_surf.get_height() // 2
         y_coord_item = y_coord_middle_screen - self._GAP_BETWEEN_OPTIONS // 2 \
-                         - self._FONT_SIZE
+            - self._FONT_SIZE
         x_coord_item = self._calculate_x_for_centre(self._display_surf.get_width(),
                                                     above_middle_options[0])
-        self._render_menu_item(above_middle_options[0], x_coord_item, y_coord_item)
+        self._render_menu_item(
+            above_middle_options[0], x_coord_item, y_coord_item)
         for option in above_middle_options[1:]:
             y_coord_item -= self._GAP_BETWEEN_OPTIONS + self._FONT_SIZE
             x_coord_item = self._calculate_x_for_centre(
                 self._display_surf.get_width(),
                 option
-                )
+            )
             self._render_menu_item(option, x_coord_item, y_coord_item)
 
         # Draw items below middle of screen
@@ -128,13 +130,14 @@ class GameMenu(AbstractScreen):
         y_coord_item = y_coord_middle_screen + self._GAP_BETWEEN_OPTIONS // 2
         x_coord_item = self._calculate_x_for_centre(self._display_surf.get_width(),
                                                     below_middle_options[0])
-        self._render_menu_item(below_middle_options[0], x_coord_item, y_coord_item)
+        self._render_menu_item(
+            below_middle_options[0], x_coord_item, y_coord_item)
         for option in below_middle_options[1:]:
             y_coord_item += self._GAP_BETWEEN_OPTIONS + self._FONT_SIZE
             x_coord_item = self._calculate_x_for_centre(
                 self._display_surf.get_width(),
                 option
-                )
+            )
             self._render_menu_item(option, x_coord_item, y_coord_item)
 
     def _calculate_x_for_centre(self, screen_width, option):
@@ -152,7 +155,8 @@ class GameMenu(AbstractScreen):
         Render a menu item at (x_coord, y_coord) on the screen. If the item is the
         currently selected, render it in bold.
         """
-        menu_item_text = self._FONT.render(menu_item.text, True, self._TEXT_COLOUR)
+        menu_item_text = self._FONT.render(
+            menu_item.text, True, self._TEXT_COLOUR)
         self._display_surf.blit(menu_item_text, (x_coord, y_coord))
 
     def _highlight_next_option(self):
@@ -162,7 +166,7 @@ class GameMenu(AbstractScreen):
         the first in the list.
         """
         self._selected_option_number = (self._selected_option_number + 1)\
-                                       % len(self._OPTIONS)
+            % len(self._OPTIONS)
 
     def _highlight_previous_option(self):
         """
@@ -171,4 +175,4 @@ class GameMenu(AbstractScreen):
         highlighted to be the last in the list.
         """
         self._selected_option_number = (self._selected_option_number - 1)\
-                                       % len(self._OPTIONS)
+            % len(self._OPTIONS)

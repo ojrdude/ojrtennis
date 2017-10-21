@@ -1,10 +1,13 @@
 """
 The ball in ojrtennis
 """
-import random
 import math
+import random
+
 import pygame
+
 from utilities import LeftOrRight
+
 
 class Ball:
     """
@@ -26,7 +29,7 @@ class Ball:
 
         self._speed = 3
 
-        self._surf = None # Set upon first draw
+        self._surf = None  # Set upon first draw
 
     def move(self):
         """
@@ -119,7 +122,8 @@ class Ball:
         Limit the angle of the ball so that it doesn't start travelling too up & down
         or passes through the bat because the angle_modifier sends it that direction.
         """
-        # 2 pi is a complete circle. Save memory thus (and simplify calculations):
+        # 2 pi is a complete circle. Save memory thus (and simplify
+        # calculations):
         self._direction = self._direction % (2 * math.pi)
         if side_of_board == LeftOrRight.RIGHT:
             if self._direction < math.pi - math.radians(self._MAX_ANGLE):
@@ -128,7 +132,7 @@ class Ball:
                 self._direction = math.pi + self._MAX_ANGLE
         else:
             if self._direction > math.radians(self._MAX_ANGLE) and \
-                   self._direction < math.pi:
+                    self._direction < math.pi:
                 self._direction = self._MAX_ANGLE
             elif self._direction < 2 * math.pi - math.radians(self._MAX_ANGLE) \
                     and self._direction > math.pi:

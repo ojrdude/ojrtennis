@@ -28,7 +28,8 @@ class Ojrtennis:
         each individual screen depending on what stage in the game we are at.
         """
         pygame.init()
-        display_surf = pygame.display.set_mode((self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
+        display_surf = pygame.display.set_mode(
+            (self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
 
         while True:
             game_menu = gamemenu.GameMenu(display_surf)
