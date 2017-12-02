@@ -51,8 +51,8 @@ class GameMenu(AbstractScreen):
         # pylint: enable=bad-continuation
     ]
 
-    def __init__(self, display_surface):
-        super(GameMenu, self).__init__(display_surface)
+    def __init__(self, display_surface, config):
+        super(GameMenu, self).__init__(display_surface, config)
         self._selected_option_number = 0
 
     @property

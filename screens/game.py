@@ -21,24 +21,22 @@ class Game(AbstractScreen):
     """
     _FPS = 50
 
-    _BG_COLOUR = (0, 0, 0)
-
     _POINTS_TO_WIN = 5
 
     _FONT_SIZE = 50
     _FONT = pygame.font.Font('freesansbold.ttf', _FONT_SIZE)
-    _TEXT_COLOUR = (255, 255, 255)
     _PLAY_AGAIN_LINE_1_LOCATION = (200, 200)
     _PLAY_AGAIN_LINE_2_LOCATION = (200, 200 + 1.1 * _FONT_SIZE)
     _VICTORY_TEXT_LOCATION = (200, 200)
 
-    def __init__(self, display_surface):
-        super(Game, self).__init__(display_surface)
+    def __init__(self, display_surface, config):
+        super(Game, self).__init__(display_surface, config)
 
         self._ball = None
         self._bat_1 = None
         self._bat_2 = None
         self._serving_bat = None
+
         self._reset_game()
 
     def main_screen_loop(self):
@@ -47,7 +45,7 @@ class Game(AbstractScreen):
         """
         while True:
             self._check_for_quit()
-            self._display_surf.fill(self._BG_COLOUR)
+            self._display_surf.fill(self._bg_colour)
             self._do_all_movements()
             self._draw()
             self._test_collisions()
@@ -158,11 +156,11 @@ class Game(AbstractScreen):
         if left_score == self._POINTS_TO_WIN:
             self._logger.info(f'Left Wins with score: {left_score}')
             victory_text = self._FONT.render(
-                'Left Wins!', True, self._TEXT_COLOUR)
+                'Left Wins!', True, self._text_colour)
         elif right_score == self._POINTS_TO_WIN:
             self._logger.info(f'Right Wins with score: {right_score}')
             victory_text = self._FONT.render(
-                'Right Wins!', True, self._TEXT_COLOUR)
+                'Right Wins!', True, self._text_colour)
         else:
             return False
 

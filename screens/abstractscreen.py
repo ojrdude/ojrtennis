@@ -3,11 +3,12 @@ Abstract base game screen.
 """
 
 import abc
-import logging
 import sys
 
 import pygame
+
 import pygame.locals as pgLocals
+from utilities import get_logger
 
 
 class AbstractScreen(abc.ABC):
@@ -15,12 +16,28 @@ class AbstractScreen(abc.ABC):
     Abstract base class which contains common methods required by all different game
     screens such as handling quit and common attributes like the display surface.
     """
+    _DEFAULT_BG_COLOUR = (0, 0, 0)
+    _DEFAULT_TEXT_COLOUR = (255, 255, 255)
 
-    def __init__(self, display_surf):
+    def __init__(self, display_surf, config):
         self._display_surf = display_surf
         self._fps_clock = pygame.time.Clock()
 
-        self._logger = logging.getLogger(self.__class__.__name__)
+        self._logger = get_logger(self)
+
+        try:
+            bg_colour = (int(x) for x in config['Background Colour'].split(','))
+            text_colour = (int(x) for x in config['Text Colour'].split(','))
+            self._bg_colour = tuple(bg_colour)
+            self._text_colour = tuple(text_colour)
+            assert len(self._bg_colour) == len(self._text_colour) == 3, 'Colours must be 3 parts'
+            for colour_component in self._bg_colour + self._text_colour:
+                assert 0 <= colour_component <= 255, 'RGB Colour compenents must be between 0 and 255 (inc.)'
+        except (KeyError, ValueError, AssertionError) as e:
+            self._logger.error('Error initialising from config. Default values will be used. '
+                               f'Error="{e}"')
+            self._bg_colour = self._DEFAULT_BG_COLOUR
+            self._text_colour = self._DEFAULT_TEXT_COLOUR
 
     @abc.abstractmethod
     def main_screen_loop(self):
@@ -50,5 +67,5 @@ class AbstractScreen(abc.ABC):
         process.
         """
         self._logger.info(log_message)
-        pygame.quit()
+        pygame.quit()  # @UndefinedVariable
         sys.exit()
