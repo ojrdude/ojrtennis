@@ -3,10 +3,13 @@ Bat code for ojrtennis
 """
 
 from math import radians
+import math
+import random
 
 import pygame
 
 from utilities import LeftOrRight
+from utilities import UpOrDown
 
 
 class Bat:
@@ -129,3 +132,66 @@ class Bat:
             return True, 0
 
         return False, None
+
+
+class AIBat(Bat):
+    """
+    A bat which is not human-controlled but rather controlled by artificial intelligence.
+    """
+    _SERVE_RATE = 0.01
+    _SERVING_DIRECTION_CHANGE_RATE = 0.05
+
+    def __init__(self, up_key, down_key, serve_key, board_width, board_height, is_right_hand_bat=False):
+        super(AIBat, self).__init__(up_key, down_key, serve_key, board_width, board_height,
+                                    is_right_hand_bat=False)
+        self._last_move_direction = None
+
+    def move(self, ball_y, serving=False):
+        """
+        Given the y coordinate of the ball, move the bat.
+        """
+        if not serving:
+            if self._y_coord < ball_y:
+                self.move_down()
+            elif self._y_coord > ball_y:
+                self.move_up()
+        else:
+            change_direction = random.random() < self._SERVING_DIRECTION_CHANGE_RATE
+            if change_direction and self._last_move_direction == UpOrDown.UP:
+                self._last_move_direction = UpOrDown.DOWN
+                self.move_down()
+            elif change_direction and self._last_move_direction == UpOrDown.DOWN:
+                self._last_move_direction = UpOrDown.UP
+                self.move_up()
+            elif self._last_move_direction == UpOrDown.UP:
+                self.move_up()
+            else:
+                self.move_down()
+
+    def serve(self, ball_y):
+        """
+        Serving behaviour
+        """
+        is_serve = random.random() < self._SERVE_RATE
+        if is_serve:
+            if self._last_move_direction == UpOrDown.UP:
+                ball_angle = math.radians(self.SERVE_ANGLE_MODIFIER)
+            else:
+                ball_angle = math.radians(-self.SERVE_ANGLE_MODIFIER)
+            return True, ball_angle
+
+        else:
+            self.move(ball_y, serving=True)
+            return False, None
+
+    def move_down(self):
+        super(AIBat, self).move_down()
+        self._last_move_direction = UpOrDown.DOWN
+        if self._y_coord == self._maximum_y:
+            self._last_move_direction = UpOrDown.UP
+
+    def move_up(self):
+        super(AIBat, self).move_up()
+        self._last_move_direction = UpOrDown.UP
+        if self._y_coord == 0:
+            self._last_move_direction = UpOrDown.DOWN

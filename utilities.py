@@ -11,3 +11,11 @@ class LeftOrRight(Enum):
     """
     LEFT = 1
     RIGHT = 2
+
+
+class UpOrDown(Enum):
+    """
+    Simple enumeration of vertical directions.
+    """
+    UP = 1
+    DOWN = 2

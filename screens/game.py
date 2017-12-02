@@ -9,6 +9,7 @@ import pygame
 
 from ball import Ball
 from ball import BallState
+from bat import AIBat
 from bat import Bat
 from score import Score
 from screens.abstractscreen import AbstractScreen
@@ -32,13 +33,14 @@ class Game(AbstractScreen):
     _PLAY_AGAIN_LINE_2_LOCATION = (200, 200 + 1.1 * _FONT_SIZE)
     _VICTORY_TEXT_LOCATION = (200, 200)
 
-    def __init__(self, display_surface):
+    def __init__(self, display_surface, one_player=False):
         super(Game, self).__init__(display_surface)
 
         self._ball = None
         self._bat_1 = None
         self._bat_2 = None
         self._serving_bat = None
+        self._one_player = one_player
         self._reset_game()
 
     def main_screen_loop(self):
@@ -72,14 +74,19 @@ class Game(AbstractScreen):
             return pressed_keys[button1] == pressed_keys[button2]
 
         angle_modifier = self._bat_1.SERVE_ANGLE_MODIFIER
-        if both_pressed_or_unpressed(self._bat_1.up_key, self._bat_1.down_key):
-            self._handle_serve(self._bat_1, 0, pressed_keys)
-        elif pressed_keys[self._bat_1.up_key]:
-            self._bat_1.move_up()
-            self._handle_serve(self._bat_1, math.radians(-angle_modifier), pressed_keys)
-        elif pressed_keys[self._bat_1.down_key]:
-            self._bat_1.move_down()
-            self._handle_serve(self._bat_1, math.radians(angle_modifier), pressed_keys)
+
+        if self._one_player:
+            self._bat_1.move(self._ball.y_coord)
+            self._handle_ai_serve()
+        else:
+            if both_pressed_or_unpressed(self._bat_1.up_key, self._bat_1.down_key):
+                self._handle_serve(self._bat_1, 0, pressed_keys)
+            elif pressed_keys[self._bat_1.up_key]:
+                self._bat_1.move_up()
+                self._handle_serve(self._bat_1, math.radians(-angle_modifier), pressed_keys)
+            elif pressed_keys[self._bat_1.down_key]:
+                self._bat_1.move_down()
+                self._handle_serve(self._bat_1, math.radians(angle_modifier), pressed_keys)
 
         if both_pressed_or_unpressed(self._bat_2.up_key, self._bat_2.down_key):
             self._handle_serve(self._bat_2, math.pi, pressed_keys)
@@ -102,6 +109,20 @@ class Game(AbstractScreen):
 
         if pressed_keys[bat.serve_key]:
             self._logger.info(f'Ball served by bat={bat.side_of_board} with ball_angle={ball_angle}')
+            self._ball.start_moving(ball_angle)
+
+    def _handle_ai_serve(self):
+        """
+        Handle the AI bat's serve.
+        """
+        is_serving_bat = self._serving_bat is self._bat_1
+        if not self._ball.is_being_served or not is_serving_bat:
+            self._logger.debug(f'Not doing AI serving because is_being_served={self._ball.is_being_served} '
+                               f'or because is_serving_bat={is_serving_bat}')
+            return
+
+        is_serve, ball_angle = self._bat_1.serve(self._ball.y_coord)
+        if is_serve:
             self._ball.start_moving(ball_angle)
 
     def _draw(self):
@@ -180,8 +201,7 @@ class Game(AbstractScreen):
         """
         self._logger.info('Resetting game. '
                           'The bats are recentred a new ball created in the middle of the screen.')
-        self._bat_1 = Bat(pygame.locals.K_w, pygame.locals.K_s, pygame.locals.K_SPACE,
-                          self._display_surf.get_width(), self._display_surf.get_height())
+        self._bat_1 = self._get_bat_1()
         self._bat_2 = Bat(pygame.locals.K_UP, pygame.locals.K_DOWN, pygame.locals.K_RCTRL,
                           self._display_surf.get_width(), self._display_surf.get_height(),
                           is_right_hand_bat=True)
@@ -200,8 +220,7 @@ class Game(AbstractScreen):
         self._logger.info('Starting new point. '
                           f'The bats are recentred and the ball is drawn on the loser={serving} bat')
 
-        self._bat_1 = Bat(pygame.locals.K_w, pygame.locals.K_s, pygame.locals.K_SPACE,
-                          self._display_surf.get_width(), self._display_surf.get_height())
+        self._bat_1 = self._get_bat_1()
         self._bat_2 = Bat(pygame.locals.K_UP, pygame.locals.K_DOWN, pygame.locals.K_RCTRL,
                           self._display_surf.get_width(), self._display_surf.get_height(),
                           is_right_hand_bat=True)
@@ -223,3 +242,13 @@ class Game(AbstractScreen):
             self._ball.move()
         else:
             self._ball.x_coord, self._ball.y_coord = self._serving_bat.front_centre
+
+    def _get_bat_1(self):
+        """
+        Return the bat to use for Bat 1. This will be a human bat if playing 2-player and a AI bat if
+        playing 1-player.
+        """
+        if self._one_player:
+            return AIBat(None, None, None, self._display_surf.get_width(), self._display_surf.get_height())
+        return Bat(pygame.locals.K_w, pygame.locals.K_s, pygame.locals.K_SPACE,
+                   self._display_surf.get_width(), self._display_surf.get_height())

@@ -19,8 +19,13 @@ class Ojrtennis:
     def __init__(self):
         logging.basicConfig(level=logging.INFO)
         self._logger = logging.getLogger(self.__class__.__name__)
-
+        self.display_surf = pygame.display.set_mode(
+            (self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
         pygame.display.set_caption('ojrtennis')
+
+        self._menu_choice_functions = {gamemenu.MenuReturnValue.QUIT: self._quit_game,
+                                       gamemenu.MenuReturnValue.ONE_PLAYER: self._one_player_game,
+                                       gamemenu.MenuReturnValue.TWO_PLAYER: self._two_player_game}
 
     def run_game(self):
         """
@@ -28,22 +33,37 @@ class Ojrtennis:
         each individual screen depending on what stage in the game we are at.
         """
         pygame.init()  # @UndefinedVariable
-        display_surf = pygame.display.set_mode(
-            (self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
 
         while True:
-            game_menu = gamemenu.GameMenu(display_surf)
+            game_menu = gamemenu.GameMenu(self.display_surf)
             user_choice = game_menu.main_screen_loop()
 
-            if user_choice == gamemenu.MenuReturnValue.GAME:
-                self._logger.info('Game option selected, starting game.')
-                game_screen = game.Game(display_surf)
-                game_screen.main_screen_loop()
-                self._logger.info('Game has ended, returning to menu.')
-            elif user_choice == gamemenu.MenuReturnValue.QUIT:
-                self._logger.info('Quit option selected, quiting.')
-                pygame.quit()  # @UndefinedVariable
-                sys.exit()
+            self._menu_choice_functions[user_choice]()
+
+    def _one_player_game(self):
+        """
+        Start a one player game.
+        """
+        self._logger.info('One player game option selected, starting game.')
+        game_screen = game.Game(self.display_surf, one_player=True)
+        game_screen.main_screen_loop()
+        self._logger.info('Game has ended, returning to menu.')
+
+    def _two_player_game(self):
+        """
+        Start a two player game.
+        """
+        self._logger.info('Two player game option selected, starting game.')
+        game_screen = game.Game(self.display_surf)
+        game_screen.main_screen_loop()
+        self._logger.info('Game has ended, returning to menu.')
+
+    def _quit_game(self):
+        """
+        Quit the game.
+        """
+        self._logger.info('Quit option selected, quiting.')
+        sys.exit()
 
 
 if __name__ == '__main__':

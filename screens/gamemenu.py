@@ -17,8 +17,9 @@ class MenuReturnValue(Enum):
     Enumerated type of the possible menu choices that could be returned to the
     caller by GameMenu. Could later have options like '1-player', '2-player' etc.
     """
-    GAME = 1
-    QUIT = 2
+    QUIT = 0
+    ONE_PLAYER = 1
+    TWO_PLAYER = 2
 
 
 class GameMenu(AbstractScreen):
@@ -38,17 +39,9 @@ class GameMenu(AbstractScreen):
     _TEXT_COLOUR = (255, 255, 255)
 
     _OPTIONS = [
-        MenuItem('Start', MenuReturnValue.GAME),
+        MenuItem('One Player', MenuReturnValue.ONE_PLAYER),
+        MenuItem('Two Player', MenuReturnValue.TWO_PLAYER),
         MenuItem('Quit', MenuReturnValue.QUIT),
-        # Uncomment the below options to check menu renders properly with more options
-        # pylint: disable=bad-continuation
-        # The auto-comment/uncoment feature in IDLE puts comments at start of line.
-        # The convenience outweighs the code 'badness'
-        ##        MenuItem('Bollocks1', MenuReturnValue.QUIT),
-        ##        MenuItem('MORE BOLLOCKS', MenuReturnValue.QUIT),
-        ##        MenuItem('B0110ck5', MenuReturnValue.QUIT),
-        ##        MenuItem('twat', MenuReturnValue.QUIT),
-        # pylint: enable=bad-continuation
     ]
 
     def __init__(self, display_surface):
